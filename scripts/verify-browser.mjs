@@ -45,7 +45,7 @@ try{
   assert.equal(await page.locator('.orbit-item').count(),6);
  });
  await check('Realm Atlas offers confirmed and disabled destinations',async()=>{
-  await page.locator('button[data-action=app][data-id="realm-atlas"]').click();
+  await page.locator('button.orbit-item[data-action=app][data-id="realm-atlas"]').click();
   assert(await page.getByText('Domistika XR').count()>0);
   assert(await page.getByText('LENZ',{exact:true}).count()>0);
   assert(await page.getByText('Infinite Porch').count()>0);
@@ -59,12 +59,12 @@ try{
   assert.equal(await page.locator('button[data-action=favorite][data-id="btm"]').innerText(),'★');
  });
  await check('Loom Market changes category filter',async()=>{
-  await page.locator('button[data-action=app][data-id="loom-market"]').click();
+  await page.locator('button.orbit-item[data-action=app][data-id="loom-market"]').click();
   await page.locator('button[data-action=market][data-id="Creation"]').click();
   assert(await page.getByText('SIGL Designer').count()>0);
  });
  await check('glyph app handles actual pointer drawing',async()=>{
-  await page.locator('button[data-action=app][data-id="sigl-designer"]').click();
+  await page.locator('button.orbit-item[data-action=app][data-id="sigl-designer"]').click();
   const canvas=page.locator('#glyph-canvas');
   await canvas.waitFor();
   const box=await canvas.boundingBox();
@@ -76,7 +76,7 @@ try{
  });
  await check('DriftRocks is playable and restartable',async()=>{
   await page.getByRole('button',{name:'9 / REFUGE'}).click();
-  await page.locator('button[data-action=app][data-id="driftrocks"]').click();
+  await page.locator('button.orbit-item[data-action=app][data-id="driftrocks"]').click();
   await page.locator('button[data-action=rock][data-id="left"]').click();
   assert.equal(await page.locator('.rock').count(),1);
   await page.locator('button[data-action=rock-reset]').click();
