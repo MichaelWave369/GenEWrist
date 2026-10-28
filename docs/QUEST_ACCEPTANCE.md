@@ -1,14 +1,15 @@
-# Physical Quest 3 acceptance — NOT YET COMPLETED
+# Physical Quest 3 acceptance — NOT COMPLETED
 
-This experimental XR demo has not been verified on a headset. A green Node/CI check is not proof of hardware comfort or sustained frame rate.
+This experimental XR display has not been tested on a physical headset or Touch controllers. CI/simulated pose tests do not establish headset comfort or sustained FPS.
 
-- [ ] Serve dist/ via HTTPS and enter WebXR explicitly from Quest Browser.
-- [ ] Both eyes render a stable properly scaled panel.
-- [ ] Left grip pose anchors correctly; head-space fallback works if no hand grip.
-- [ ] No near clipping, text overlap or eye strain during seated and standing use.
-- [ ] XR exit, system menu, visibility loss and controller loss clean up safely.
-- [ ] Test actual 15-minute device frame pacing, memory and thermal comfort.
-- [ ] Check external world handoff does not leave active XR resources.
-- [ ] Confirm desktop fallback and input accessibility.
+- [ ] Serve dist/ via HTTPS in Quest Browser; enter immersive VR intentionally.
+- [ ] Confirm binocular stereo view and panel readability at approximately 1.15m head fallback distance.
+- [ ] Confirm a visible left Touch grip anchors the panel at comfortable range; approaching the face switches to head fallback.
+- [ ] Confirm right Touch select cycles Identity / Tools / Refuge; no gameplay actions are invoked.
+- [ ] Verify exit via Quest system menu; all GL resources disposed.
+- [ ] Confirm cancellation, browser visibility changes, hand tracking loss, seated/standing posture and controller unplug.
+- [ ] Test 15+ minutes of actual frame pacing, memory use and thermal behavior.
+- [ ] Verify external links are launched only from desktop-mode confirmation and do not leave a dangling immersive session.
+- [ ] Confirm browser/desktop input and accessibility work on mobile/keyboard.
 
-Current experiment is a stereo visualization only; controller ray interaction and in-game HUD replacement are future work. Do not deploy as a finished Quest control interface.
+This is a stereo *display* demonstration, not a functioning world-overlaid wrist in BTM. XR pointer selection, host input suppression, calibrated forearm device pose, live BTM status, and true single-session world portal transitions remain future tasks.
