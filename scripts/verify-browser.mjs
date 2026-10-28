@@ -56,6 +56,7 @@ try{
   const s=await page.evaluate(()=>JSON.parse(localStorage.getItem('genewrist.settings.v1')));
   assert(s.favorites.includes('btm'));
   await page.reload();
+  await page.locator('button.orbit-item[data-action=app][data-id="realm-atlas"]').click();
   assert.equal(await page.locator('button[data-action=favorite][data-id="btm"]').innerText(),'★');
  });
  await check('Loom Market changes category filter',async()=>{
