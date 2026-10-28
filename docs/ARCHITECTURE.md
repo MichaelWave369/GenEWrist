@@ -19,3 +19,9 @@ No telemetry, login, network API, remote scripts, automatic sensor reads, arbitr
 
 ## Expansion roadmap
 BTM adapter first, followed by PhiOS XR/Infinite Porch, then Domistika XR, Spark, LENZ, Commons and other worlds. Aether Engine/Optic Eyes/Threads are documented extension points, not implemented hardware.
+
+## v0.2 publishing and verified world destinations
+
+Three external destinations were taken from the relevant project README documentation: BTM at `https://michaelwave369.github.io/BTM/`, Domistika XR at `https://michaelwave369.github.io/Domistika/xr.html`, and LENZ at `https://michaelwave369.github.io/LENZ/`. All use a separate website session. These URLs are source-documented; availability is not guaranteed. No guess-based URLs or automatic cross-origin save access are allowed.
+
+The Pages deployment workflow runs only on merged `main` and optionally via `workflow_dispatch`. Configure repository GitHub Pages source to GitHub Actions if deployment indicates the site is disabled.
