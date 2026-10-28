@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#070f1e"/>
+  <meta name="description" content="Gen.E.Wrist: The Builder's Companion, a local-first universal XR field interface."/>
+  <title>GEN.E.WRIST | The Builder's Companion</title>
+  <link rel="stylesheet" href="./style.css"/>
+  <script type="module" src="./src/main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to controls</a>
+  <div class="stars" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Gen.E.Wrist home"><span class="brand-mark">Φ</span><span>GEN.E.<strong>WRIST</strong><small>UNIVERSAL FIELD INTERFACE</small></span></a>
+    <div class="top-actions"><span class="micro online"><span class="status-dot"></span> LOCAL FIRST</span><button id="xr-button" class="top-button" type="button" title="Experimental Quest Browser stereo display">ENTER XR <span aria-hidden="true">◉</span></button></div>
+  </header>
+  <main id="main" class="layout">
+    <section class="intro" aria-labelledby="intro-title">
+      <p class="eyebrow">PHI369 LABS // FIELD UNIT 001</p>
+      <h1 id="intro-title">EVERY WORLD.<br/><em>ONE WRIST.</em></h1>
+      <p class="tagline">The Builder's Companion. Your portable command surface for worlds, tools, creation and a little ridiculousness.</p>
+      <div class="spec-card">
+        <p class="eyebrow">ORIGINAL ARCHITECTURE</p>
+        <div class="spec-grid"><span><b>03</b><small>IDENTITY</small></span><span><b>06</b><small>TOOLS</small></span><span><b>09</b><small>REFUGE</small></span></div>
+        <p class="dim">Historical Gen.E.Wrist design, rebuilt as a real interactive browser prototype.</p>
+      </div>
+      <div class="intro-footer">
+        <span class="eyebrow">SYSTEM PROFILE</span><p>DEMO · v0.1.0 · NOT CONNECTED TO HARDWARE</p>
+        <p class="dim">No accounts. No telemetry. All experiences remain independent until connected through adapters.</p>
+      </div>
+    </section>
+    <section class="device" aria-labelledby="device-title">
+      <div class="device-top"><span class="eyebrow">FIELD INTERFACE // ACTIVE</span><div class="leds" aria-hidden="true"><i></i><i></i><i></i></div></div>
+      <div class="wrist-shell">
+        <div class="wrist-screw screw-a" aria-hidden="true"></div><div class="wrist-screw screw-b" aria-hidden="true"></div>
+        <div class="screen-border"><div id="wrist-root" class="screen" aria-live="polite"></div></div>
+        <div class="wrist-rail" aria-hidden="true"><span>GEW ▪ 369</span><span class="mini-bars">▂▅▃▆▂</span></div>
+      </div>
+      <div class="device-bottom"><span class="eyebrow" id="device-title">GEN.E.WRIST // BUILDER'S COMPANION</span><span class="serial">SERIES ∞ / 001</span></div>
+      <p class="disclosure">Simulated Field readings. No sensors, real-world device links, or in-game data connected.</p>
+    </section>
+    <aside class="workspace" aria-labelledby="workspace-title">
+      <div class="workspace-header"><span class="eyebrow">FIELD WINDOW / 02</span><span class="diamond" aria-hidden="true">◇</span></div>
+      <h2 id="workspace-title">FIELD OPERATIONS</h2>
+      <div id="workspace-root" class="workspace-content"></div>
+      <footer class="workspace-footer">
+        <label for="theme-select">COLOR PROFILE</label><select id="theme-select"><option value="neon">NEON SIGNAL</option><option value="field">FIELD BLUE</option><option value="nevora">NEVORA</option></select>
+        <button id="reset-button" type="button" class="text-button">RESET LOCAL SETTINGS</button>
+      </footer>
+    </aside>
+  </main>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  <footer class="page-footer"><span>ENTER THE FIELD / Φ369 LABS</span><span>LOCAL BY DESIGN · OPEN SOURCE · MIT</span><a href="https://github.com/MichaelWave369/GenEWrist" rel="noopener noreferrer" target="_blank">SOURCE CODE ↗</a></footer>
+</body>
+</html>
