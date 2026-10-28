@@ -1,10 +1,17 @@
 {
   "name":"@phi369/genewrist",
-  "version":"0.1.0",
+  "version":"0.2.0",
   "private":true,
   "type":"module",
   "description":"Local-first universal Field Interface",
   "license":"MIT",
   "engines":{"node":">=20"},
-  "scripts":{"dev":"node scripts/serve.mjs","check":"node scripts/check.mjs","test":"node --test tests/*.test.mjs","build":"node scripts/build.mjs"}
+  "scripts":{
+    "dev":"node scripts/serve.mjs",
+    "check":"node scripts/check.mjs",
+    "test":"node --test tests/*.test.mjs",
+    "test:browser":"node scripts/verify-browser.mjs",
+    "build":"node scripts/build.mjs",
+    "verify:static":"node scripts/verify-static.mjs"
+  }
 }

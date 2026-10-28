@@ -17,9 +17,16 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
-      - name: Verify static output
+      - run: npm run verify:static
+      - name: Install Chromium browser-test runtime
         run: |
-          test -f dist/index.html
-          test -f dist/style.css
-          test -f dist/src/main.js
-          test -f dist/src/xr.js
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: genewrist-browser-evidence
+          path: browser-evidence/
+          if-no-files-found: ignore
