@@ -2882,3 +2882,31 @@ body.reduced-motion *:after {
 .case-leds {
   pointer-events: none;
 }
+/* Keep rotated ornament within the wearable stage on narrow viewports. */
+.device-stage {
+  overflow: clip;
+}
+.module-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.module-link {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.screen .wheel {
+  --orbit-outer: min(40cqw, calc(50cqw - 23px), 170px);
+}
+@media (max-width: 800px) {
+  .micro.offline {
+    display: block;
+    position: fixed;
+    bottom: 14px;
+    right: 14px;
+    z-index: 20;
+    background: #102b36;
+    border: 1px solid var(--glow);
+    padding: 12px;
+    font-size: 9px;
+    color: var(--ink);
+  }
+}

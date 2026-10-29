@@ -343,3 +343,40 @@ test("all three mock hosts use distinct contextual layouts and clean updates", (
   porch.setContext("inventory");
   assert.equal(porch.adapter.readState().contextId, "inventory");
 });
+
+test("identical allowlisted host updates do not trigger redundant presentation work", () => {
+  let publish,
+    updates = 0;
+  const c = connectWorld(
+    host({
+      subscribe: (fn) => {
+        publish = fn;
+        return () => {};
+      },
+    }),
+    { onUpdate: () => updates++ },
+  );
+  publish({
+    contextId: "build",
+    status: { pieces: 4, privateSave: "different private object" },
+  });
+  assert.equal(updates, 0);
+  publish({ contextId: "build", status: { pieces: 5 } });
+  c.update({ contextId: "build", status: { pieces: 5 } });
+  assert.equal(updates, 1);
+  publish({ contextId: "explore", status: { room: "Hall" } });
+  assert.equal(updates, 2);
+  c.dispose();
+});
+test("BTM contextual HUD quantization matches its live wrist display", () => {
+  const adapter = makeBTMWorldAdapter({
+    readSnapshot: () => ({
+      player: { health: 86.2, armor: 42.2, energy: 73.9 },
+    }),
+  });
+  assert.deepEqual(adapter.readState().status, {
+    health: 87,
+    armor: 43,
+    energy: 73,
+  });
+});

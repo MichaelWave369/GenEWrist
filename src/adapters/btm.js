@@ -94,9 +94,18 @@ export function makeBTMWorldAdapter({
     return {
       contextId: raw.contextId === "navigation" ? "navigation" : "combat",
       status: {
-        health: player.health,
-        armor: player.armor,
-        energy: player.energy,
+        health:
+          typeof player.health === "number"
+            ? Math.ceil(player.health)
+            : undefined,
+        armor:
+          typeof player.armor === "number"
+            ? Math.ceil(player.armor)
+            : undefined,
+        energy:
+          typeof player.energy === "number"
+            ? Math.floor(player.energy)
+            : undefined,
         weapon: raw.weapon,
         objective: raw.objective,
         ori: raw.ori,

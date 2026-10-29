@@ -5,7 +5,7 @@ Authority: both supplied implementation prompts. Baseline: `a18911806f2aba6aa007
 ## Verification status
 
 - Observed baseline: 17 existing Node tests, syntax, build and static Pages-path verification passed before changes.
-- Candidate: 63 Node software tests pass locally. Existing foundation/XR-layout tests are retained, including legacy BTM adapter behavior.
+- Candidate: 65 Node software tests pass locally. Existing foundation/XR-layout tests are retained, including legacy BTM adapter behavior.
 - Candidate static build, relative module resolution, `/GenEWrist/` path verification, hashed offline shell and private SDK packaging pass locally.
 - Browser interaction: manually exercised the redesigned console, rings, a permission-gated combat action (energy 73 → 66), sculpt → paint replacement, SIGL layer/stamp editing and external travel cancellation in the cloud browser.
 - The extended Playwright CI suite produces desktop, 390/320 px mobile, local-app, offline, storage-recovery and synthetic stereo evidence. CI outcome is recorded on the PR; do not infer a pass from the existence of the script.
@@ -61,3 +61,13 @@ Run `40802063563`, job `123212234422`: the native click on the outer-ring select
 ### Second CI browser failure / corrected assertion
 
 Run `40802513402`, job `123213675835`: 20 browser checks passed, including all eight working applications and all three mock hosts. The built console successfully reloaded offline and opened SIGL; the test then incorrectly required an inactive, hidden toast to appear in the accessibility tree. It now checks the persistent OFFLINE indicator directly. Review also found that the Recent view’s opt-in explanation needed to refresh when its setting changes; the render key and the same browser regression now cover this.
+
+### Third CI browser failure / responsive repair
+
+Run `40803038378`, job `123215374022`: the first 22 browser checks passed, including real offline reload and the opt-in-history refresh. The narrow layout then revealed horizontal overflow from the rotated stage ornament’s pseudo-elements. The stage now clips its decorative artwork, cards use shrinkable grid columns and long canonical labels wrap. The radial radius also respects the available small display. Manual two-frame CSS viewport inspection now reports equal client/scroll widths (375/375 and 305/305, with desktop scrollbar gutters); native mobile/touch acceptance remains the separate CI case. [Mobile layout review screenshot](screenshots/mobile-layout-review.jpg).
+
+The independent mobile, blocked-storage and synthetic-stereo tail scenarios now preserve their failures together in one CI run. A failure still marks the overall job failed; no acceptance threshold was relaxed.
+
+Mobile review also made the real offline indicator visible as a compact status pill when the normal desktop header indicator is hidden. The mobile browser case explicitly checks this state before its World screenshot.
+
+Final performance/compatibility review coalesces identical allowlisted host updates before notifying presentations. The current BTM adapter also uses BTM’s actual ceil-health/ceil-armor/floor-energy HUD convention, preventing fractional readings from overflowing the combat instruments. Both behaviors have separate regressions.

@@ -836,6 +836,7 @@ $("#xr-button").addEventListener("click", async () => {
   }
 });
 const networkState = () => {
+  $("#network-state").classList.toggle("offline", !navigator.onLine);
   $("#network-state").innerHTML =
     '<i class="status-dot"></i> ' +
     (navigator.onLine ? "LOCAL FIRST" : "OFFLINE / LOCAL");

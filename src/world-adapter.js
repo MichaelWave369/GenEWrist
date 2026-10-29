@@ -260,6 +260,12 @@ export function connectWorld(
     dispose();
     onFault(error);
   };
+  const changed = (next) =>
+    next.contextId !== state.contextId ||
+    Object.keys(next.status).length !== Object.keys(state.status).length ||
+    Object.entries(next.status).some(
+      ([key, value]) => state.status[key] !== value,
+    );
   try {
     unsubscribe = adapter.subscribe((next, error) => {
       if (!active) return;
@@ -267,6 +273,7 @@ export function connectWorld(
         fail(error);
         return;
       }
+      if (!changed(next)) return;
       state = next;
       try {
         onUpdate(snapshot());
@@ -286,8 +293,11 @@ export function connectWorld(
     snapshot,
     update(raw) {
       if (!active) return false;
-      state = sanitizeWorldState(adapter.manifest, raw);
-      onUpdate(snapshot());
+      const next = sanitizeWorldState(adapter.manifest, raw);
+      if (changed(next)) {
+        state = next;
+        onUpdate(snapshot());
+      }
       return true;
     },
     setGrants(values) {

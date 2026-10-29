@@ -23,6 +23,24 @@ async function check(name, fn) {
     throw error;
   }
 }
+// These tail scenarios own fresh browser contexts. Preserve all failures in one run.
+async function checkIndependent(name, fn) {
+  try {
+    await check(name, fn);
+  } catch (error) {
+    process.exitCode = 1;
+    console.error("Independent browser check failed:", name, error);
+    await page
+      ?.screenshot({
+        path:
+          "browser-evidence/FAILURE-" +
+          name.replace(/[^a-z0-9]+/gi, "-").slice(0, 70) +
+          ".png",
+        fullPage: true,
+      })
+      .catch(() => {});
+  }
+}
 const evidence = async (name) =>
   page.screenshot({
     path: "browser-evidence/" + name + ".png",
@@ -532,7 +550,7 @@ try {
       assert.equal(await page.locator("#xr-button").isDisabled(), false);
     },
   );
-  await check(
+  await checkIndependent(
     "mobile touch layout preserves all navigation, ring hit areas and width at 390/320 px",
     async () => {
       const mobile = await browser.newContext({
@@ -575,9 +593,12 @@ try {
             );
           }
         }
+        const scrollWidth = await page.evaluate(
+          () => document.documentElement.scrollWidth,
+        );
         assert(
-          (await page.evaluate(() => document.documentElement.scrollWidth)) <=
-            width,
+          scrollWidth <= width,
+          "Horizontal overflow at " + width + "px: " + scrollWidth + "px",
         );
       }
       await page.setViewportSize({ width: 390, height: 844 });
@@ -587,13 +608,18 @@ try {
       await nav("world").click();
       await page.locator("[data-action=host-connect][data-id=studio]").click();
       await page.locator("[data-action=host-context][data-id=paint]").click();
+      await mobile.setOffline(true);
+      await page
+        .locator("#network-state.offline")
+        .waitFor({ state: "visible" });
       await evidence("11-mobile-world");
+      await mobile.setOffline(false);
       assert(await page.locator(".nav-home").isVisible());
       await mobile.close();
       page = previous;
     },
   );
-  await check(
+  await checkIndependent(
     "blocked browser storage remains functional and offers session exports",
     async () => {
       const blocked = await browser.newContext();
@@ -618,7 +644,7 @@ try {
       await blocked.close();
     },
   );
-  await check(
+  await checkIndependent(
     "real browser WebGL renders synthetic stereo, controller selections and cleanup",
     async () => {
       const xrContext = await browser.newContext({
@@ -672,11 +698,17 @@ try {
       await xrContext.close();
     },
   );
-  await check(
+  await checkIndependent(
     "zero JavaScript page errors across desktop, mobile, storage recovery and stereo tests",
     () => assert.deepEqual(errors, []),
   );
-  console.log("Browser verifications passed: " + results.length);
+  console.log(
+    "Browser verifications: " +
+      results.filter((r) => r.pass).length +
+      " / " +
+      results.length +
+      " passed",
+  );
 } catch (error) {
   console.error("Browser verification failed:", error);
   process.exitCode = 1;
