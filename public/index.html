@@ -1,57 +1,281 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta name="theme-color" content="#070f1e"/>
-  <meta name="description" content="Gen.E.Wrist: The Builder's Companion, a local-first universal XR field interface."/>
-  <title>GEN.E.WRIST | The Builder's Companion</title>
-  <link rel="stylesheet" href="./style.css"/>
-  <script type="module" src="./src/main.js"></script>
-</head>
-<body>
-  <a class="skip" href="#main">Skip to controls</a>
-  <div class="stars" aria-hidden="true"></div>
-  <header class="topbar">
-    <a class="brand" href="./" aria-label="Gen.E.Wrist home"><span class="brand-mark">Φ</span><span>GEN.E.<strong>WRIST</strong><small>UNIVERSAL FIELD INTERFACE</small></span></a>
-    <div class="top-actions"><span class="micro online"><span class="status-dot"></span> LOCAL FIRST</span><button id="xr-button" class="top-button" type="button" title="Experimental Quest Browser stereo display">ENTER XR <span aria-hidden="true">◉</span></button></div>
-  </header>
-  <main id="main" class="layout">
-    <section class="intro" aria-labelledby="intro-title">
-      <p class="eyebrow">PHI369 LABS // FIELD UNIT 001</p>
-      <h1 id="intro-title">EVERY WORLD.<br/><em>ONE WRIST.</em></h1>
-      <p class="tagline">The Builder's Companion. Your portable command surface for worlds, tools, creation and a little ridiculousness.</p>
-      <div class="spec-card">
-        <p class="eyebrow">ORIGINAL ARCHITECTURE</p>
-        <div class="spec-grid"><span><b>03</b><small>IDENTITY</small></span><span><b>06</b><small>TOOLS</small></span><span><b>09</b><small>REFUGE</small></span></div>
-        <p class="dim">Historical Gen.E.Wrist design, rebuilt as a real interactive browser prototype.</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#080f19" />
+    <meta
+      name="description"
+      content="Gen.E.Wrist — one wrist, one home, every world. An original local-first creative console and universal XR interface by Φ369 Labs."
+    />
+    <title>GEN.E.WRIST — The Field Engine</title>
+    <link rel="icon" href="./mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./src/main.js"></script>
+  </head>
+  <body data-theme="neon">
+    <a class="skip" href="#main">Skip to the Field Engine</a>
+    <div class="horizon" aria-hidden="true">
+      <div class="horizon-sun"></div>
+      <div class="horizon-grid"></div>
+    </div>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Gen.E.Wrist home"
+        ><svg viewBox="0 0 44 44" aria-hidden="true">
+          <path
+            d="M22 2 42 22 22 42 2 22Z M22 9v26 M9 22a13 9 0 1 0 26 0 13 9 0 1 0-26 0"
+          /></svg
+        ><span
+          >GEN.E.<strong>WRIST</strong
+          ><small>THE BUILDER’S COMPANION</small></span
+        ></a
+      >
+      <span class="edition">Φ369 LABS <i></i> FIELD ENGINE / 03</span>
+      <div class="top-actions">
+        <span id="network-state" class="micro"
+          ><i class="status-dot"></i> LOCAL FIRST</span
+        ><button id="xr-button" class="top-button" type="button">
+          ENTER XR <span aria-hidden="true">↗</span>
+        </button>
       </div>
-      <div class="intro-footer">
-        <span class="eyebrow">SYSTEM PROFILE</span><p>DEMO · v0.1.0 · NOT CONNECTED TO HARDWARE</p>
-        <p class="dim">No accounts. No telemetry. All experiences remain independent until connected through adapters.</p>
+    </header>
+    <nav class="global-nav" aria-label="Persistent wrist navigation">
+      <button data-action="home" class="nav-home" type="button">
+        <span aria-hidden="true">⌂</span> HOME
+      </button>
+      <button
+        data-action="back"
+        class="nav-back"
+        type="button"
+        aria-label="Back"
+      >
+        <span aria-hidden="true">←</span>
+      </button>
+      <div class="nav-destinations">
+        <button data-action="navigate" data-id="universal" type="button">
+          UNIVERSAL <span>03 / 06 / 09</span>
+        </button>
+        <button data-action="navigate" data-id="atlas" type="button">
+          REALM ATLAS <span>DESTINATIONS</span>
+        </button>
+        <button data-action="navigate" data-id="world" type="button">
+          WORLD <span id="world-nav-label">CONTEXT ENGINE</span
+          ><i class="world-indicator" aria-hidden="true"></i>
+        </button>
       </div>
+      <button
+        data-action="settings"
+        class="nav-settings"
+        type="button"
+        aria-label="Open accessibility and device settings"
+      >
+        ⚙
+      </button>
+    </nav>
+    <main id="main" class="layout">
+      <section class="masthead" aria-labelledby="intro-title">
+        <div>
+          <p class="eyebrow">
+            <span class="rule"></span> ENTER THE FIELD / PERSONAL INSTRUMENT
+          </p>
+          <h1 id="intro-title">ONE WRIST.<br /><em>EVERY WORLD.</em></h1>
+        </div>
+        <div class="masthead-note">
+          <span class="small-index">001 — ∞</span>
+          <p>
+            Your tools. Your identity. Your way home.<br />A familiar instrument
+            in unfamiliar worlds.
+          </p>
+          <p class="mode-motto">
+            <b>UNIVERSAL</b> is who you are.<br /><b>WORLD</b> is what you’re
+            doing.
+          </p>
+        </div>
+      </section>
+      <section class="device" aria-labelledby="device-title">
+        <div class="device-top">
+          <span class="eyebrow">GEN.E / FIELD UNIT 001</span
+          ><span id="device-signal" class="signal-tag">STANDALONE CONSOLE</span>
+        </div>
+        <div class="device-stage">
+          <div class="stage-orbit" aria-hidden="true"></div>
+          <div class="stage-annotation annotation-a" aria-hidden="true">
+            MACHINED FOR<br />THE IMAGINATION
+          </div>
+          <div class="stage-annotation annotation-b" aria-hidden="true">
+            3 IDENTITY<br />6 TOOLS<br />9 REFUGE
+          </div>
+          <div class="wrist-strap" aria-hidden="true">
+            <span>FIELD / 369</span>
+          </div>
+          <div class="wrist-shell">
+            <div class="case-edge" aria-hidden="true"></div>
+            <div class="case-ticks" aria-hidden="true"></div>
+            <span class="case-engraving" aria-hidden="true"
+              >G E N . E . W R I S T</span
+            >
+            <span class="case-number" aria-hidden="true">Φ369 · SERIES ∞</span>
+            <i class="wrist-screw screw-a" aria-hidden="true"></i
+            ><i class="wrist-screw screw-b" aria-hidden="true"></i
+            ><i class="wrist-screw screw-c" aria-hidden="true"></i
+            ><i class="wrist-screw screw-d" aria-hidden="true"></i>
+            <button
+              class="crown"
+              data-action="mode-toggle"
+              type="button"
+              aria-label="Expand or minimize wrist display"
+            ></button>
+            <div class="screen-border">
+              <div id="wrist-root" class="screen"></div>
+            </div>
+            <div class="case-leds" aria-hidden="true">
+              <i></i><i></i><i></i>
+            </div>
+          </div>
+        </div>
+        <div
+          id="ring-controls"
+          class="ring-controls"
+          role="group"
+          aria-label="Gen.E.Wrist rings"
+        ></div>
+        <div class="device-bottom">
+          <span id="device-title">PRECISION / POSSIBILITY / PLAY</span
+          ><button data-action="mode-toggle" class="text-button" type="button">
+            GLANCE ↔ FIELD</button
+          ><span class="serial">ORIGINAL 3–6–9</span>
+        </div>
+        <p class="disclosure" id="device-disclosure">
+          A digital instrument. Physical wearable hardware is fictional; Quest
+          acceptance is pending.
+        </p>
+      </section>
+      <aside class="workspace" aria-labelledby="workspace-title">
+        <div class="workspace-header">
+          <span id="workspace-kicker" class="eyebrow"
+            >UNIVERSAL / LOCAL CONSOLE</span
+          ><span class="window-number">[ 02 ]</span>
+        </div>
+        <h2 id="workspace-title" tabindex="-1">A home between worlds.</h2>
+        <div id="workspace-root" class="workspace-content"></div>
+        <footer class="workspace-footer">
+          <span><i class="status-dot"></i> YOUR DATA STAYS WITH YOU</span
+          ><button data-action="settings" type="button" class="text-button">
+            DEVICE SETTINGS ↗
+          </button>
+        </footer>
+      </aside>
+    </main>
+    <section class="architecture-strip" aria-label="Original architecture">
+      <div>
+        <b>03</b><span>IDENTITY<small>Who you are</small></span>
+      </div>
+      <div>
+        <b>06</b><span>TOOLS<small>What you can do</small></span>
+      </div>
+      <div>
+        <b>09</b><span>REFUGE<small>A little room to play</small></span>
+      </div>
+      <p>Eighteen original modules.<br />One continuous identity.</p>
     </section>
-    <section class="device" aria-labelledby="device-title">
-      <div class="device-top"><span class="eyebrow">FIELD INTERFACE // ACTIVE</span><div class="leds" aria-hidden="true"><i></i><i></i><i></i></div></div>
-      <div class="wrist-shell">
-        <div class="wrist-screw screw-a" aria-hidden="true"></div><div class="wrist-screw screw-b" aria-hidden="true"></div>
-        <div class="screen-border"><div id="wrist-root" class="screen" aria-live="polite"></div></div>
-        <div class="wrist-rail" aria-hidden="true"><span>GEW ▪ 369</span><span class="mini-bars">▂▅▃▆▂</span></div>
-      </div>
-      <div class="device-bottom"><span class="eyebrow" id="device-title">GEN.E.WRIST // BUILDER'S COMPANION</span><span class="serial">SERIES ∞ / 001</span></div>
-      <p class="disclosure">Simulated Field readings. No sensors, real-world device links, or in-game data connected.</p>
-    </section>
-    <aside class="workspace" aria-labelledby="workspace-title">
-      <div class="workspace-header"><span class="eyebrow">FIELD WINDOW / 02</span><span class="diamond" aria-hidden="true">◇</span></div>
-      <h2 id="workspace-title">FIELD OPERATIONS</h2>
-      <div id="workspace-root" class="workspace-content"></div>
-      <footer class="workspace-footer">
-        <label for="theme-select">COLOR PROFILE</label><select id="theme-select"><option value="neon">NEON SIGNAL</option><option value="field">FIELD BLUE</option><option value="nevora">NEVORA</option></select>
-        <button id="reset-button" type="button" class="text-button">RESET LOCAL SETTINGS</button>
-      </footer>
-    </aside>
-  </main>
-  <div id="notice" class="notice" role="status" aria-live="polite"></div>
-  <footer class="page-footer"><span>ENTER THE FIELD / Φ369 LABS</span><span>LOCAL BY DESIGN · OPEN SOURCE · MIT</span><a href="https://github.com/MichaelWave369/GenEWrist" rel="noopener noreferrer" target="_blank">SOURCE CODE ↗</a></footer>
-</body>
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+    <dialog id="travel-dialog" aria-labelledby="travel-title">
+      <form method="dialog">
+        <p class="eyebrow">REALM ATLAS / INTENTIONAL HANDOFF</p>
+        <h2 id="travel-title">Leave for another world?</h2>
+        <p id="travel-description"></p>
+        <p class="dim">
+          This ends your current XR session. The next website may require you to
+          enter VR again. Host state and game saves are never sent.
+        </p>
+        <div class="dialog-buttons">
+          <button value="cancel" class="chip">CANCEL / STAY HERE</button
+          ><button id="confirm-travel" value="confirm" class="button">
+            CONFIRM &amp; OPEN ↗
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="settings-dialog" aria-labelledby="settings-title">
+      <form method="dialog">
+        <div class="settings-heading">
+          <div>
+            <p class="eyebrow">MAKE IT YOURS</p>
+            <h2 id="settings-title">Device settings</h2>
+          </div>
+          <button value="close" class="icon-button" aria-label="Close settings">
+            ×
+          </button>
+        </div>
+        <div class="settings-grid">
+          <label
+            >COLOR PROFILE<select id="theme-select">
+              <option value="neon">COPPER / ION</option>
+              <option value="field">BLUE / CHROME</option>
+              <option value="nevora">NEVORA / SAGE</option>
+            </select></label
+          >
+          <label
+            >TEXT SCALE<select id="text-scale">
+              <option value="small">Compact</option>
+              <option value="medium">Standard</option>
+              <option value="large">Large</option>
+            </select></label
+          >
+          <label
+            >POINTER HAND<select id="hand-select">
+              <option value="right">Right pointer / left wrist</option>
+              <option value="left">Left pointer / right wrist</option>
+            </select></label
+          >
+          <label
+            >XR COMFORT<select id="posture-select">
+              <option value="seated">Seated / lower dock</option>
+              <option value="standing">Standing / raised dock</option>
+            </select></label
+          >
+          <label class="check-row"
+            ><input id="motion-toggle" type="checkbox" /> Reduce motion</label
+          ><label class="check-row"
+            ><input id="contrast-toggle" type="checkbox" /> Increase
+            contrast</label
+          >
+          <label class="check-row"
+            ><input id="environment-toggle" type="checkbox" checked /> XR
+            synthwave environment</label
+          ><label class="check-row"
+            ><input id="history-toggle" type="checkbox" /> Remember confirmed
+            destinations</label
+          >
+          <label class="home-setting"
+            >HOME DESTINATION<select id="home-select"></select
+            ><small
+              >Infinite Porch is the intended Home; its web integration is not
+              yet verified.</small
+            ></label
+          >
+        </div>
+        <p class="dim">
+          No account, telemetry or remote code. These preferences stay in this
+          browser. Blocked storage falls back to this session.
+        </p>
+        <button id="reset-button" type="button" class="text-button">
+          RESET LOCAL SETTINGS
+        </button>
+        <div class="dialog-buttons">
+          <button value="close" class="button">DONE</button>
+        </div>
+      </form>
+    </dialog>
+    <footer class="page-footer">
+      <span>ENTER THE FIELD / Φ369 LABS</span
+      ><span>LOCAL FIRST · INDEPENDENT WORLDS · MIT</span
+      ><a
+        href="https://github.com/MichaelWave369/GenEWrist"
+        rel="noopener noreferrer"
+        target="_blank"
+        >BUILT IN THE OPEN ↗</a
+      >
+    </footer>
+  </body>
 </html>

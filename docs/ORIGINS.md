@@ -13,3 +13,7 @@ Legacy names are retained when part of canonical fiction. New product identity i
 **Interactive demo:** local application UI actually responds. **Informational:** shows genuine historical design description but has no executable application. **Planned:** concept only; explicitly unavailable. These labels are not interchangeable.
 
 The source says Gen.E.Wrist remembers only what its user chooses to shape. Accordingly, this app stores optional settings/favorites locally; the SIGL canvas is not persisted or transmitted. There are no remote services, analytics or sensitive sensor functions.
+
+## Field Engine 0.3.0 extension
+
+The two controlling implementation prompts preserve the original eighteen names and ring assignments and add WORLD as a separate destination. The working SIGL tool now stores projects only when the user explicitly chooses Save, and JourneyLog stores only manually written notes. Both have explicit export and deletion. Host status, grants and private game data are never persisted. The original archive/history above is retained; its earlier “canvas is not persisted” sentence describes the foundation milestone, not the new opt-in project save.

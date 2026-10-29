@@ -18,6 +18,9 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run verify:static
+      - run: npm run verify:offline
+      - run: npm run build:sdk
+      - run: npm run verify:sdk
       - name: Install Chromium browser-test runtime
         run: |
           npm install --no-save playwright@1.56.1
@@ -30,3 +33,10 @@ jobs:
           name: genewrist-browser-evidence
           path: browser-evidence/
           if-no-files-found: ignore
+      - name: Upload pinned SDK candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: genewrist-sdk-0.3.0
+          path: |
+            sdk-dist/genewrist-0.3.0.tgz
+            sdk-dist/SHA256SUMS
