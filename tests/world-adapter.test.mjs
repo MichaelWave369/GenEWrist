@@ -51,6 +51,15 @@ const host = (overrides = {}) =>
     ...overrides,
   });
 
+test("host accents preserve text contrast on the approved presentation surface", () => {
+  const dark = manifest();
+  dark.theme = { accent: "#010101" };
+  assert.equal(validateWorldManifest(dark).theme.accent, "#61e5ed");
+  const light = manifest();
+  light.theme = { accent: "#8ecbff" };
+  assert.equal(validateWorldManifest(light).theme.accent, "#8ecbff");
+});
+
 test("versioned registration rejects unsupported versions, executable components and duplicate identifiers", () => {
   for (const change of [
     (m) => (m.apiVersion = 99),

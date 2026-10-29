@@ -2870,3 +2870,15 @@ body.reduced-motion *:after {
   --orbit-middle: min(31cqw, 130px);
   --orbit-inner: clamp(72px, 22cqw, 88px);
 }
+/* Mechanical art must never cover a real hit target. */
+.stage-orbit,
+.stage-annotation,
+.wrist-strap,
+.case-edge,
+.case-ticks,
+.case-engraving,
+.case-number,
+.wrist-screw,
+.case-leds {
+  pointer-events: none;
+}

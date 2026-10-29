@@ -40,6 +40,19 @@ const unique = (values) => {
     throw Error("Duplicate manifest identifier");
 };
 const icon = (value) => (WORLD_ICONS.includes(value) ? value : "cube");
+const safeAccent = (value) => {
+  if (typeof value !== "string" || !/^#[0-9a-fA-F]{6}$/.test(value))
+    return "#61e5ed";
+  const luminance = (hex) => {
+    const rgb = [1, 3, 5]
+      .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+  };
+  return (luminance(value) + 0.05) / (luminance("#0b1a24") + 0.05) >= 4.5
+    ? value
+    : "#61e5ed";
+};
 const freeze = (value) => {
   if (value && typeof value === "object") {
     for (const v of Object.values(value)) freeze(v);
@@ -114,9 +127,7 @@ export function validateWorldManifest(value) {
   unique(contexts.map((c) => c.id));
   if (!contexts.some((c) => c.id === value.initialContext))
     throw Error("Unknown initial context");
-  const accent = /^#[0-9a-fA-F]{6}$/.test(value.theme?.accent)
-    ? value.theme.accent
-    : "#61e5ed";
+  const accent = safeAccent(value.theme?.accent);
   return freeze({
     apiVersion: 1,
     id: id(value.id),

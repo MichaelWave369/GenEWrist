@@ -52,7 +52,7 @@ wrist.disconnectWorld();
 | `id`, context/action/capability IDs | 1–64 lowercase letters/digits/hyphens; unique within their lists |
 | `kind` | `host` by default; `demo` visibly labels simulated data |
 | `title`, labels | Plain text, bounded lengths, escaped by presentations |
-| `theme.accent` | Six-digit hexadecimal color; invalid values use a safe default |
+| `theme.accent` | Six-digit hexadecimal color with at least 4.5:1 contrast on the approved host surface; other values use a safe default |
 | `icon` | Bundled crosshair, brush, compass, cube, home, layers, spark, map or inventory glyph |
 | `contexts` | 1–12; each has identity, title, layout, fields, controls and optional views |
 | `layout` | `combat`, `studio`, `explorer`, `inventory`, `dashboard` |

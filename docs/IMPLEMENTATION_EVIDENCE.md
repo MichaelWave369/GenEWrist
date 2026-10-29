@@ -53,3 +53,7 @@ The CI `genewrist-browser-evidence` artifact adds full-page desktop/app captures
 - Candidate source was formatted for review. The formatter did not infer an SVG parser; the original small valid SVG remained unchanged. Syntax/build checks validate the delivered sources.
 
 Any CI failures discovered after opening the PR must be repaired and the subsequent successful run linked before declaring browser qualification complete.
+
+### First CI browser failure / repaired
+
+Run `40802063563`, job `123212234422`: the native click on the outer-ring selector timed out because the decorative `.stage-orbit` extended beyond its stage and intercepted pointer events. The fix makes mechanical decoration explicitly pointer-transparent; the actual button is still clicked normally in the regression suite. Syntax, all 62 then-current unit tests, build/static/offline and SDK verification passed in this run before the browser failure. A host-accent contrast regression was also added during review.
