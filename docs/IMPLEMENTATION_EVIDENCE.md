@@ -5,7 +5,7 @@ Authority: both supplied implementation prompts. Baseline: `a18911806f2aba6aa007
 ## Verification status
 
 - Observed baseline: 17 existing Node tests, syntax, build and static Pages-path verification passed before changes.
-- Candidate: 62 Node software tests pass locally. Existing foundation/XR-layout tests are retained, including legacy BTM adapter behavior.
+- Candidate: 63 Node software tests pass locally. Existing foundation/XR-layout tests are retained, including legacy BTM adapter behavior.
 - Candidate static build, relative module resolution, `/GenEWrist/` path verification, hashed offline shell and private SDK packaging pass locally.
 - Browser interaction: manually exercised the redesigned console, rings, a permission-gated combat action (energy 73 → 66), sculpt → paint replacement, SIGL layer/stamp editing and external travel cancellation in the cloud browser.
 - The extended Playwright CI suite produces desktop, 390/320 px mobile, local-app, offline, storage-recovery and synthetic stereo evidence. CI outcome is recorded on the PR; do not infer a pass from the existence of the script.
@@ -57,3 +57,7 @@ Any CI failures discovered after opening the PR must be repaired and the subsequ
 ### First CI browser failure / repaired
 
 Run `40802063563`, job `123212234422`: the native click on the outer-ring selector timed out because the decorative `.stage-orbit` extended beyond its stage and intercepted pointer events. The fix makes mechanical decoration explicitly pointer-transparent; the actual button is still clicked normally in the regression suite. Syntax, all 62 then-current unit tests, build/static/offline and SDK verification passed in this run before the browser failure. A host-accent contrast regression was also added during review.
+
+### Second CI browser failure / corrected assertion
+
+Run `40802513402`, job `123213675835`: 20 browser checks passed, including all eight working applications and all three mock hosts. The built console successfully reloaded offline and opened SIGL; the test then incorrectly required an inactive, hidden toast to appear in the accessibility tree. It now checks the persistent OFFLINE indicator directly. Review also found that the Recent view’s opt-in explanation needed to refresh when its setting changes; the render key and the same browser regression now cover this.

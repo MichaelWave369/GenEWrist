@@ -246,6 +246,7 @@ function render(force = false) {
     p.ring,
     p.favorites,
     p.recent,
+    p.rememberHistory,
     s.destination === "world" ? s.worldHost : null,
     s.destination === "world" ? s.hostError : null,
   ]);

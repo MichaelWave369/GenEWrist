@@ -268,13 +268,11 @@ try {
   await check(
     "invalid journal archive import preserves saved notes",
     async () => {
-      await page
-        .locator("#content-file")
-        .setInputFiles({
-          name: "invalid.json",
-          mimeType: "application/json",
-          buffer: Buffer.from('{"version":99}'),
-        });
+      await page.locator("#content-file").setInputFiles({
+        name: "invalid.json",
+        mimeType: "application/json",
+        buffer: Buffer.from('{"version":99}'),
+      });
       await page
         .getByRole("status")
         .getByText(/Invalid content archive/)
@@ -478,8 +476,12 @@ try {
   await check(
     "confirmed handoff records history only after explicit opt-in",
     async () => {
-      await setting(async () => page.locator("#history-toggle").check());
       await app("realm-atlas");
+      await page.getByLabel("Filter worlds").selectOption("recent");
+      assert(await page.getByText(/History is off/).isVisible());
+      await setting(async () => page.locator("#history-toggle").check());
+      assert.equal(await page.getByText(/History is off/).count(), 0);
+      await page.getByLabel("Filter worlds").selectOption("all");
       await page.route("https://michaelwave369.github.io/BTM/", (route) =>
         route.fulfill({
           status: 200,
@@ -513,7 +515,9 @@ try {
       await page.reload();
       await app("sigl-designer");
       assert(await page.locator("#glyph-canvas").isVisible());
-      assert((await page.getByRole("status").count()) >= 1);
+      assert(
+        (await page.locator("#network-state").innerText()).includes("OFFLINE"),
+      );
       await context.setOffline(false);
     },
   );
