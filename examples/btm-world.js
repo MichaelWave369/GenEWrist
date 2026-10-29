@@ -11,8 +11,20 @@ export function attachBTMWorld({
   activate,
   setWristInputCapture,
   paintDirty,
+  worlds = [],
+  requestExitXR = null,
+  requestRecenter = null,
+  requestTravel = null,
 }) {
-  const wrist = createWrist();
+  for (const fn of [
+    subscribeHUD,
+    readMap,
+    activate,
+    setWristInputCapture,
+    paintDirty,
+  ])
+    if (typeof fn !== "function") throw TypeError("BTM host callback required");
+  const wrist = createWrist({ worlds });
   const snapshot = () => ({
     player: {
       health: game.player.health,
@@ -39,13 +51,9 @@ export function attachBTMWorld({
   wrist.navigate("world");
   const surface = createXRSurface({
     wrist,
-    onExit: () => wrist.setMode("glance"),
-    onRecenter: () => paintDirty(),
-    onTravel: () => {
-      throw Error(
-        "Use BTM’s existing checkpoint / confirmation / XR-exit travel authority.",
-      );
-    },
+    onExit: requestExitXR,
+    onRecenter: requestRecenter,
+    onTravel: requestTravel,
   });
   const stop = wrist.subscribe(() => {
     surface.render();

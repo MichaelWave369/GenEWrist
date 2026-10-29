@@ -8,9 +8,9 @@ export function createXRSurface({
   onRecenter,
   onTravel,
   onNotice = () => {},
-  onDemo = () => {},
-  readApp = () => ({}),
-  onAppAction = () => {},
+  onDemo = null,
+  readApp = null,
+  onAppAction = null,
 }) {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
@@ -51,6 +51,7 @@ export function createXRSurface({
     text(line, x, y + row * 35 * fontScale, size, "#b7cbd0");
   };
   const button = (id, x, y, w, h, label, action, enabled = true) => {
+    enabled = enabled && typeof action === "function";
     c.fillStyle = hover === id ? "#35505b" : "#142b38";
     c.fillRect(x, y, w, h);
     c.strokeStyle = enabled
@@ -158,7 +159,7 @@ export function createXRSurface({
     const s = wrist.snapshot(),
       world = s.worldHost,
       app = s.apps.find((a) => a.id === s.activeApp),
-      appState = readApp();
+      appState = typeof readApp === "function" ? readApp() || {} : {};
     fontScale =
       s.preferences.subtitleSize === "large"
         ? 1.12
@@ -270,6 +271,16 @@ export function createXRSurface({
     if (s.destination === "world") {
       if (!world) {
         text("WORLD MODE / STANDALONE", 40, 218, 32, "#62e5ed");
+        if (typeof onDemo !== "function") {
+          wrap(
+            "No host connected. Register a trusted WorldAdapter to display its contextual controls. HOME, BACK and UNIVERSAL MODE remain available.",
+            40,
+            290,
+            900,
+            30,
+          );
+          return;
+        }
         wrap(
           "Choose a simulated host. Your universal tools stay with you.",
           40,
@@ -353,7 +364,9 @@ export function createXRSurface({
     if (s.destination === "atlas" || app?.id === "realm-atlas") {
       text("REALM ATLAS / INDEPENDENT WORLDS", 40, 210, 30, "#62e5ed");
       text(
-        "Choose a world, then confirm the external handoff.",
+        typeof onTravel === "function"
+          ? "Choose a world, then confirm the external handoff."
+          : "External travel is not enabled by this host.",
         40,
         252,
         23,
@@ -371,14 +384,37 @@ export function createXRSurface({
             64,
             world.title + (world.url ? "  ↗" : " / PLANNED"),
             () => (pending = world),
-            Boolean(world.url),
+            Boolean(world.url) && typeof onTravel === "function",
           );
         });
       next(s.worlds.length);
       return;
     }
-    if (app && app.id !== "house") {
+    if (app) {
       text(app.title, 40, 211, 34, "#edc591");
+      if (
+        app.action &&
+        app.action !== "market" &&
+        (typeof readApp !== "function" || typeof onAppAction !== "function")
+      ) {
+        wrap(
+          "This embedded host has not enabled the standalone creative application services. Use the full Gen.E.Wrist console for this local application.",
+          40,
+          310,
+          900,
+          32,
+        );
+        button(
+          "return-universal",
+          40,
+          560,
+          944,
+          64,
+          "RETURN TO UNIVERSAL MODE",
+          () => wrist.navigate("universal"),
+        );
+        return;
+      }
       if (app.action === "glyph") {
         if (appState.drawing) {
           drawSIGL(art.getContext("2d"), appState.drawing);

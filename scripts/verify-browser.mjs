@@ -603,7 +603,21 @@ try {
       }
       await page.setViewportSize({ width: 390, height: 844 });
       await app("sigl-designer");
-      await page.locator("[data-action=glyph-stamp][data-id=diamond]").click();
+      await page.locator("[data-action=glyph-stamp][data-id=diamond]").tap();
+      await page.locator("#glyph-canvas").scrollIntoViewIfNeeded();
+      const touchCanvas = await page.locator("#glyph-canvas").boundingBox();
+      await page.touchscreen.tap(
+        touchCanvas.x + touchCanvas.width * 0.5,
+        touchCanvas.y + touchCanvas.height * 0.4,
+      );
+      assert(
+        await page.locator("#glyph-canvas").evaluate((el) =>
+          el
+            .getContext("2d")
+            .getImageData(0, 0, 640, 480)
+            .data.some((v, i) => i % 4 === 3 && v > 0),
+        ),
+      );
       await evidence("10-mobile-sigl");
       await nav("world").click();
       await page.locator("[data-action=host-connect][data-id=studio]").click();
@@ -666,24 +680,29 @@ try {
         draws: __softwareXR.draws,
       }));
       assert(before.draws >= before.frames * 2);
+      const select = async (x, y) => {
+        const uploads = await p.evaluate(() => __softwareXR.uploads);
+        await p.evaluate(([x, y]) => __softwareXR.select(x, y), [x, y]);
+        await p.waitForFunction(
+          (previous) => __softwareXR.uploads > previous,
+          uploads,
+        );
+      };
       await p.screenshot({ path: "browser-evidence/12-synthetic-stereo.png" });
-      await p.evaluate(() => __softwareXR.select(710, 120));
+      await select(710, 120);
       await p.waitForFunction(
         () =>
           document.querySelector("#workspace-title").textContent ===
           "In this world.",
       );
-      await p.evaluate(() => __softwareXR.select(512, 412));
+      await select(512, 412);
       await p.waitForFunction(
         () => document.querySelector(".layout-combat") !== null,
       );
-      await p.evaluate(() => __softwareXR.select(247, 650));
-      await p.waitForTimeout(80);
-      await p.evaluate(() => __softwareXR.select(272, 317));
-      await p.waitForTimeout(80);
-      await p.evaluate(() => __softwareXR.select(314, 120));
-      await p.waitForTimeout(80);
-      await p.evaluate(() => __softwareXR.select(770, 309));
+      await select(247, 650);
+      await select(272, 317);
+      await select(314, 120);
+      await select(770, 309);
       await p.waitForFunction(() =>
         document.querySelector(".host-status")?.textContent.includes("66%"),
       );

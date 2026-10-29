@@ -91,3 +91,5 @@ BTM PR #5’s v0.2 offline snapshots remain independent and untouched. Canonical
 Run `npm run build:sdk` for a private `genewrist-0.3.0.tgz` with an explicit version, API number and SHA-256 manifest for each source file. Review the archive/digest and pin the package or exact merged Git commit in the consuming project. No npm package is published. Do not keep editing divergent copied files in hosts; update reviewed, versioned dependencies together.
 
 Gen.E.Wrist owns shared behavior. Hosts own state, permissions, rendering lifecycle, save systems and application-specific command validation.
+
+Embedded XR integrations do not automatically install the standalone creative editors. Without real `readApp`/`onAppAction` services, those modules show an explicit informational fallback and a working Universal return action. Demo selection appears only when a demo callback is supplied. Exit/recenter/travel controls are disabled when their owner callbacks are absent. Supply actual host-owned lifecycle callbacks and reviewed `worlds` records to `examples/btm-world.js`; do not replace them with no-op handlers.

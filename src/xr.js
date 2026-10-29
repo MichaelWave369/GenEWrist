@@ -184,9 +184,9 @@ export async function launchExperimentalXR({
   onEnd = () => {},
   onNotice = () => {},
   onTravel = null,
-  onDemo = () => {},
-  readApp = () => ({}),
-  onAppAction = () => {},
+  onDemo = null,
+  readApp = null,
+  onAppAction = null,
 } = {}) {
   if (!navigator.xr || typeof navigator.xr.requestSession !== "function")
     throw Error("WebXR not exposed by this browser");
@@ -288,14 +288,13 @@ export async function launchExperimentalXR({
       wrist,
       onExit: end,
       onRecenter: recenter,
-      onTravel: async (id) => {
-        if (!onTravel) {
-          onNotice("This renderer requires a host travel callback.");
-          return;
-        }
-        await end();
-        await onTravel(id);
-      },
+      onTravel:
+        typeof onTravel === "function"
+          ? async (id) => {
+              await end();
+              await onTravel(id);
+            }
+          : null,
       onNotice,
       onDemo,
       readApp,

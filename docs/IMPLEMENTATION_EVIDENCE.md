@@ -5,7 +5,7 @@ Authority: both supplied implementation prompts. Baseline: `a18911806f2aba6aa007
 ## Verification status
 
 - Observed baseline: 17 existing Node tests, syntax, build and static Pages-path verification passed before changes.
-- Candidate: 65 Node software tests pass locally. Existing foundation/XR-layout tests are retained, including legacy BTM adapter behavior.
+- Candidate: 67 Node software tests pass locally. Existing foundation/XR-layout tests are retained, including legacy BTM adapter behavior.
 - Candidate static build, relative module resolution, `/GenEWrist/` path verification, hashed offline shell and private SDK packaging pass locally.
 - Browser interaction: manually exercised the redesigned console, rings, a permission-gated combat action (energy 73 → 66), sculpt → paint replacement, SIGL layer/stamp editing and external travel cancellation in the cloud browser.
 - The extended Playwright CI suite produces desktop, 390/320 px mobile, local-app, offline, storage-recovery and synthetic stereo evidence. CI outcome is recorded on the PR; do not infer a pass from the existence of the script.
@@ -71,3 +71,11 @@ The independent mobile, blocked-storage and synthetic-stereo tail scenarios now 
 Mobile review also made the real offline indicator visible as a compact status pill when the normal desktop header indicator is hidden. The mobile browser case explicitly checks this state before its World screenshot.
 
 Final performance/compatibility review coalesces identical allowlisted host updates before notifying presentations. The current BTM adapter also uses BTM’s actual ceil-health/ceil-armor/floor-energy HUD convention, preventing fractional readings from overflowing the combat instruments. Both behaviors have separate regressions.
+
+### Fourth CI browser failure / synthetic frame synchronization
+
+Run `40804374347`, job `123219662295`: 25/26 browser checks passed, including mobile widths, offline indication and blocked storage. Real WebGL produced the synthetic stereo frame and the first controller navigation worked. The next synthetic command arrived before the new Canvas target map was uploaded and before the neutral-trigger frame, so the guarded selector correctly declined it. The test now waits for an actual texture upload between commands instead of sending consecutive zero-time inputs or relying on fixed sleeps. Input safety is unchanged.
+
+The mobile case now uses an actual emulated touch tap on the stamp and Canvas. Final SDK review also removed unimplemented embedded-service controls: missing host callbacks disable lifecycle/travel actions and show explicit creative-app fallback text. A separate Node regression covers the embedded surface. The fresh flagship viewport replaces the initial landing capture.
+
+A full renderer/controller Node regression now reproduces the zero-time stale-input rejection and verifies that selection succeeds after the next neutral/render frame. This preserves the failure mechanism rather than weakening the input guard.

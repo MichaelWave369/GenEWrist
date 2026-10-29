@@ -139,3 +139,97 @@ test("tracking-loss fallback and recenter do not allocate more GPU objects", asy
     env.restore();
   }
 });
+
+test("embedded XR exposes functional navigation and disables services the host did not supply", async () => {
+  const env = installFakeXR();
+  try {
+    const { createXRSurface } = await import("../src/xr-surface.js");
+    const wrist = createWrist();
+    wrist.setMode("field");
+    wrist.navigate("world");
+    const surface = createXRSurface({ wrist });
+    surface.render();
+    assert(surface.targets.some((t) => t.id === "home"));
+    assert(
+      !surface.targets.some(
+        (t) =>
+          t.id.startsWith("demo-") || t.id === "exit" || t.id === "recenter",
+      ),
+    );
+    wrist.openApp("sigl-designer");
+    surface.render();
+    assert(!surface.targets.some((t) => t.id.startsWith("stamp-")));
+    assert(surface.targets.some((t) => t.id === "return-universal"));
+    wrist.navigate("atlas");
+    surface.render();
+    assert(!surface.targets.some((t) => t.id.startsWith("world-")));
+    surface.destroy();
+    wrist.dispose();
+  } finally {
+    env.restore();
+  }
+});
+
+test("simulated controller input waits for the new rendered targets and neutral re-arm", async () => {
+  const env = installFakeXR(),
+    wrist = createWrist(),
+    source = {
+      handedness: "right",
+      targetRaySpace: {},
+      gamepad: { buttons: [{ pressed: false }] },
+    },
+    connections = [];
+  wrist.setMode("field");
+  env.session.inputSources = [source];
+  let ray = env.matrix(0, 1.6, 0),
+    xr;
+  const frame = {
+    ...env.frame,
+    getPose: (space) =>
+      space === source.targetRaySpace ? { transform: { matrix: ray } } : null,
+  };
+  const select = (x, y) => {
+    const dx = -0.1 + (x / 1024 - 0.5) * 0.72,
+      dy = -0.13 + (0.5 - y / 768) * 0.54,
+      dz = -1.15,
+      d = Math.hypot(dx, dy, dz);
+    ray = env.matrix(0, 1.6, 0);
+    ray[8] = -dx / d;
+    ray[9] = -dy / d;
+    ray[10] = -dz / d;
+    for (const type of ["selectstart", "select", "selectend"]) {
+      source.gamepad.buttons[0].pressed = type !== "selectend";
+      const event = new Event(type);
+      Object.defineProperties(event, {
+        frame: { value: frame },
+        inputSource: { value: source },
+      });
+      env.session.dispatchEvent(event);
+    }
+  };
+  try {
+    xr = await launchExperimentalXR({
+      wrist,
+      onDemo: (id) => {
+        connections.push(id);
+        wrist.connectWorld(createDemoHost(id).adapter);
+        wrist.navigate("world");
+      },
+    });
+    env.session.pump(frame);
+    select(710, 120);
+    await Promise.resolve();
+    assert.equal(wrist.snapshot().destination, "world");
+    select(512, 412);
+    await Promise.resolve();
+    assert.deepEqual(connections, []);
+    env.session.pump(frame);
+    select(512, 412);
+    await Promise.resolve();
+    assert.deepEqual(connections, ["btm"]);
+    assert.equal(wrist.snapshot().worldHost.manifest.id, "btm-demo");
+  } finally {
+    await xr?.end();
+    env.restore();
+  }
+});
