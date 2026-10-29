@@ -1,6 +1,6 @@
 {
   "name":"@phi369/genewrist",
-  "version":"0.2.0",
+  "version":"0.3.0",
   "private":true,
   "type":"module",
   "description":"Local-first universal Field Interface",
@@ -12,6 +12,9 @@
     "test":"node --test tests/*.test.mjs",
     "test:browser":"node scripts/verify-browser.mjs",
     "build":"node scripts/build.mjs",
-    "verify:static":"node scripts/verify-static.mjs"
+    "verify:static":"node scripts/verify-static.mjs",
+    "verify:offline":"node scripts/verify-offline.mjs",
+    "build:sdk":"node scripts/package-sdk.mjs",
+    "verify:sdk":"node scripts/verify-sdk.mjs"
   }
 }

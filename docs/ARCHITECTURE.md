@@ -1,27 +1,53 @@
-# GEN.E.WRIST architecture v0.1
+# Field Engine architecture / 0.3.0
 
-- **Catalog** (src/catalog.js): canonical historical 3–6–9 panels.
-- **Core** (src/core.js): mode, theme, app selection, host state, world directory, user favorites and navigation planning. No browser APIs required.
-- **Storage** (src/storage.js): allowlisted, versioned, local preference format; corrupt/blocked storage is nonfatal.
-- **Bridge** (src/bridge.js): host-owned readStatus and explicitly capability-granted requestAction. No hidden hooks into game memory.
-- **Worlds** (src/worlds.js): strictly HTTPS validated destinations; unknown destinations are disabled.
-- **Presentation** (src/main.js, public/): standalone accessible application.
-- **XR experiment** (src/xr.js): minimal stereo renderer, not BTM's production equipment runtime.
+The existing dependency-free ES module architecture is retained. No framework migration, external runtime services, account or telemetry. The original 3–6–9 catalog still contains precisely eighteen modules. WORLD is a fourth navigation destination alongside Home, Universal and Realm Atlas; it is not a fourth application ring.
 
-## Authority boundaries
-The host game retains collision, combat, checkpointing, save files, audio, XR session lifecycle and safety. GEN.E.WRIST supplies a portable interface and optional app metadata. Other games are not automatically modified by this repository.
+## Modules and ownership
 
-## World handoff
-A verified destination requires explicit user confirmation, and a native XR host should end its immersive session and save its own progress before navigating. Cross-origin localStorage is not shared. Seamless in-session scene transitions require a future single XR host loading compatible scenes, not hyperlinks pretending to be teleporters.
+| Module | Responsibility |
+| --- | --- |
+| `catalog.js` | Canonical module names, IDs, ring membership and honest implementation labels |
+| `core.js` | Universal navigation/history, app selection, preferences, world directory and ephemeral host connection |
+| `world-adapter.js` | API 1 validation, reviewed layout/components, explicit grants, subscriptions, context filtering, cancellation and cleanup |
+| `bridge.js`, `adapters/btm.js` | Legacy API compatibility and current BTM WorldAdapter example |
+| `application-registry.js` | Reviewed, bundled app metadata, declared local capabilities and launch allowlist |
+| `storage.js` | Backward-compatible `genewrist.settings.v1`, strict allowlist and corrupt/blocked storage recovery |
+| `content.js` | Separate `genewrist.content.v1`, validated user-created SIGLs/journal, explicit save/import/export/delete |
+| `worlds.js` | Normalized HTTPS-only, credential-free source-documented destinations |
+| `views.js`, `main.js`, `presentation.js` | Desktop/mobile presentation, scoped reusable World component and standalone creative editors |
+| `xr-surface.js` | Reviewed Canvas UI and hit targets using the same state and host permission API |
+| `xr-interaction.js` | Ray-plane intersection, input neutral re-arm and comfortable/fallback docking math |
+| `xr.js` | Experimental standalone stereo renderer, original wearable/environment meshes and complete resource ownership |
+| `offline.js`, `public/sw.js`, `scripts/build.mjs` | Content-versioned same-origin shell cache; safe update lifecycle and Pages-relative build |
 
-## Security and privacy
-No telemetry, login, network API, remote scripts, automatic sensor reads, arbitrary app installation or permissions without the user's request. Future plugins, Bluetooth/physical devices and multiplayer need independent threat models. Only locally bundled modules are executable.
+## State boundaries
 
-## Expansion roadmap
-BTM adapter first, followed by PhiOS XR/Infinite Porch, then Domistika XR, Spark, LENZ, Commons and other worlds. Aether Engine/Optic Eyes/Threads are documented extension points, not implemented hardware.
+Persistent user preferences: theme, text size, contrast, reduced motion, pointer hand, seated/standing dock, optional environment, chosen Home, favorites and explicitly enabled confirmed-destination history. Existing v1 preferences migrate by sanitization without discarding known values.
 
-## v0.2 publishing and verified world destinations
+User-owned content is saved only through deliberate SIGL/Journal actions. Imports are bounded JSON, validated before replacement, and strip unknown fields. Invalid imports leave existing content untouched. Storage failures keep a session copy with export instructions. Resetting settings does not erase creative content.
 
-Three external destinations were taken from the relevant project README documentation: BTM at `https://michaelwave369.github.io/BTM/`, Domistika XR at `https://michaelwave369.github.io/Domistika/xr.html`, and LENZ at `https://michaelwave369.github.io/LENZ/`. All use a separate website session. These URLs are source-documented; availability is not guaranteed. No guess-based URLs or automatic cross-origin save access are allowed.
+Ephemeral host state: identity, context, allowlisted status, live grants, capture flags and action completion. None enters preference/content stores, import/export archives, URL parameters, telemetry or the next world’s saves. Host subscriptions replace polling. Leaving a host or ending standalone XR aborts requests, unsubscribes, releases capture and removes contextual controls.
 
-The Pages deployment workflow runs only on merged `main` and optionally via `workflow_dispatch`. Configure repository GitHub Pages source to GitHub Actions if deployment indicates the site is disabled.
+## Navigation safety
+
+HOME, BACK, UNIVERSAL and WORLD are generated by Gen.E.Wrist outside host-provided content. Home has a reliable standalone fallback; an external configured Home goes through the same explicit handoff confirmation. Back history is bounded. Hosts can change only their registered context, fields and controls.
+
+Realm Atlas provides search, favorites and opt-in recent destinations. Known URLs require a separate accessible confirmation, orderly XR end and host disconnection before navigation. Unknown Porch/Commons destinations remain disabled. No external assets are automatically cached. Cross-site visits are not in-session portals.
+
+## Presentation and XR
+
+The industrial design uses original SVG/CSS geometry, a layered circular case, engraved bezel, ribbed strap, precision rings, copper/ion accents and restrained field lines. Nonselected rings remain visible; selecting a canonical ring reveals its exact 3/6/9 interactive module count. Full labels and keyboard-accessible module cards accompany compact radial controls.
+
+The standalone XR renderer uses actual browser WebXR and per-eye projection/view matrices. It builds original 3D wearable geometry, a static synthwave grid/horizon, a fixed spatial fallback dock and a hand-adjacent anchor when valid tracked poses are available. Left/right pointer preference swaps wrist/pointer roles. Hand input requests optional `hand-tracking`; wrist joint data is used only when supplied. Standard controller `select` plus deliberate squeeze/keyboard fallback drives the interface. No continuous gesture recognition or physical calibration is claimed.
+
+Hit testing uses the exact display plane. Trigger start and completion must target the same control under the same state revision. Tracking/visibility/source changes disarm input; hosts receive capture transitions and remain responsible for gameplay suppression. Back/Home/Close/Exit/Recenter remain available in-headset. Canvas textures upload only on state/hover changes. Meshes and buffers are created once, and all textures/buffers/programs/listeners/subscriptions/animation callbacks are released on end or failed initialization.
+
+A host can embed `createXRSurface` in its existing renderer rather than opening another session. The standalone launcher is experimental and does not replace BTM’s XR runtime.
+
+## Offline updates
+
+Build emits a content-hashed shell list and the matching HTML version. Install caches only those relative, bundled assets. Updates wait for the prior console tabs to close, avoiding new code under an old editor. Activation removes only obsolete GenEWrist caches within the exact scope. Fetch ignores other origins, paths outside the shell allowlist, query-bearing URLs, save/API data and non-GET requests. The source preview does not install a service worker; the built Pages application does.
+
+## Claim boundary
+
+Node/synthetic/browser checks establish software behavior only. They do not establish Quest 3 comfort, physical wrist registration, pinch reliability, frame rate, battery/thermal behavior or live host installation. See QUEST_ACCEPTANCE.md and IMPLEMENTATION_EVIDENCE.md.
