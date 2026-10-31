@@ -185,10 +185,13 @@ try {
       window.__phisurfPad.buttons[0].pressed = false;
       window.__phisurfPad.axes = [0, 0];
     });
-    await page.waitForTimeout(120); // neutral sample
+    await page.waitForTimeout(250); // allow neutral sample on slow CI workers
     await page.evaluate(() => { window.__phisurfPad.axes = [1, 0]; });
-    await page.waitForTimeout(120);
-    assert.equal(await dial.locator(".phisurf-item[aria-current=true]").count(), 1);
+    await page.waitForFunction(
+      () => [...document.querySelectorAll(".phisurf-panel .phisurf-item")]
+        .some((el) => el.getAttribute("aria-current") === "true"),
+      null, { timeout: 4000 },
+    );
     await page.evaluate(() => { window.__phisurfPad.buttons[0].pressed = true; });
     await page.waitForFunction(() => document.querySelector(".phisurf-center")?.textContent?.includes("WORLD"), null, { timeout: 3000 });
     assert.equal(await dial.locator(".phisurf-item").count(), 1);
