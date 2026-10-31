@@ -115,6 +115,46 @@ try {
     await surf.getByRole("button", { name: "CLOSE" }).click();
     assert.equal(await surf.isVisible(), false);
   });
+  await check("explicit PhiOperator import adds and removes only cosmetic PhiSurf shortcuts", async () => {
+    await page.locator(".nav-settings").click();
+    const file = page.locator("#operator-passport-import");
+    const data = {
+      format: "phioperator-passport", version: 1,
+      results: [1, 2, 3].map(rank => ({ rank, mode: "standard", bestScore: 9 })),
+    };
+    page.once("dialog", dialog => dialog.accept());
+    await file.setInputFiles({
+      name: "phioperator-passport-v1.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(data)),
+    });
+    await page.waitForFunction(() => document.body.classList.contains("operator-surf-wheel") &&
+      document.body.classList.contains("operator-wrist-pulse"));
+    assert.match(await page.locator("#operator-passport-status").innerText(), /rank 3 cleared/i);
+    await page.getByRole("button", { name: "DONE", exact: true }).click();
+    await page.keyboard.press("Shift+Space");
+    const dial = page.getByRole("dialog", { name: "PhiSurf quick navigation" });
+    assert.equal(await dial.locator(".phisurf-item").count(), 6);
+    await dial.locator(".phisurf-item").nth(4).click();
+    assert.equal(await dial.locator(".phisurf-item").count(), 4);
+    await dial.getByRole("button", { name: "OPERATOR SHORTCUTS" }).click();
+    assert.equal(await dial.locator(".phisurf-item").count(), 3);
+    assert(await dial.getByRole("button", { name: "SIGL Designer" }).isVisible());
+    await evidence("01-operator-passport-shortcuts");
+    await dial.getByRole("button", { name: "CLOSE" }).click();
+    await page.locator(".nav-settings").click();
+    page.once("dialog", dialog => dialog.accept());
+    await page.locator("#operator-passport-clear").click();
+    await page.waitForFunction(() => !document.body.classList.contains("operator-surf-wheel") &&
+      !document.body.classList.contains("operator-wrist-pulse"));
+    await page.getByRole("button", { name: "DONE", exact: true }).click();
+    await page.keyboard.press("Shift+Space");
+    await dial.locator(".phisurf-item").nth(4).click();
+    assert.equal(await dial.locator(".phisurf-item").count(), 3);
+    await dial.getByRole("button", { name: "CLOSE" }).click();
+    assert.equal(await page.locator(".meter").count(), 3);
+  });
+
   await check("PhiSurf supports center-origin hold-flick-release and keeps keyboard focus inside", async () => {
     await page.keyboard.press("Shift+Space");
     const surf = page.getByRole("dialog", { name: "PhiSurf quick navigation" });
