@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createWrist } from "../src/core.js";
 import { createWorldAdapter } from "../src/world-adapter.js";
-import { createPhiSurf, phiSurfTree } from "../src/phisurf.js";
+import { createPhiSurf, phiSurfTree, radialIndex } from "../src/phisurf.js";
 import { CATALOG, RINGS } from "../src/catalog.js";
 
 function host({ count = 1, calls } = {}) {
@@ -127,4 +127,17 @@ test("Back, disabled selection, subscriptions, and cleanup are bounded", async (
   assert.equal(surf.back(), true);
   assert.equal(surf.snapshot().open, false);
   off(); surf.dispose(); w.dispose();
+});
+
+test("Radial mapping is deterministic and refuses neutral or invalid directions", () => {
+  assert.equal(radialIndex(0, -1, 6), 0);
+  assert.equal(radialIndex(1, 0, 6), 2);
+  assert.equal(radialIndex(0, 1, 6), 3);
+  assert.equal(radialIndex(0, 0, 6, { inner: 0.3 }), -1);
+  assert.equal(radialIndex(0.5, 0, 6, { inner: 0.55 }), -1);
+  assert.equal(radialIndex(1.5, 0, 6, { inner: 0, outer: 1 }), -1);
+  assert.equal(radialIndex(Infinity, 1, 6), -1);
+  assert.equal(radialIndex(0, -1, 0), -1);
+  assert.equal(radialIndex(0, -1, 10), -1);
+  assert.equal(radialIndex(0, -1, 6, { inner: -1 }), -1);
 });
