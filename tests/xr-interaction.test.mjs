@@ -90,3 +90,32 @@ test("comfortable hand tracking and fixed fallback dock use caller-owned buffers
   });
   assert(Math.abs(model[0] - 0.3) < 1e-5);
 });
+
+test("PhiSurf annular targets select exact wedge without rectangular overlap", () => {
+  const cx = 512, cy = 423, inner = 86, outer = 182;
+  const sector = (index) => ({
+    id: "surf-" + index, shape: "annular-sector", cx, cy, inner, outer,
+    sector: index, count: 9, gapRadians: 0.035,
+  });
+  const targets = Array.from({ length: 9 }, (_, i) => sector(i));
+  const hit = (x, y) => ({ u: x / 1024, v: y / 768 });
+  const sample = (i, r = 130) => {
+    const a = -Math.PI / 2 + i * Math.PI * 2 / 9;
+    return hit(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+  };
+  for (let i = 0; i < 9; i++) {
+    assert.equal(targetAt(targets, sample(i))?.id, "surf-" + i);
+  }
+  assert.equal(targetAt(targets, hit(cx, cy)), null, "center deadzone");
+  assert.equal(targetAt(targets, sample(0, 82)), null, "inside inner radius");
+  assert.equal(targetAt(targets, sample(0, 186)), null, "outside visible rim");
+  const boundaryAngle = -Math.PI / 2 + Math.PI / 9;
+  assert.equal(
+    targetAt(targets, hit(cx + 130 * Math.cos(boundaryAngle), cy + 130 * Math.sin(boundaryAngle))),
+    null,
+    "visible separation is not an invisible click target",
+  );
+  assert.equal(targetAt(targets, { u: Infinity, v: 0 }), null);
+  assert.equal(targetAt(targets, { u: -0.1, v: 0.5 }), null);
+  assert.equal(targetAt(targets.filter((t) => t.sector !== 3), sample(3)), null, "disabled wedge absent");
+});
