@@ -264,6 +264,7 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
         void surf.activate(index);
       }
     }
+    pad.dataset.padDebug = [padPrimed, padNeedsNeutral, surf.snapshot().selected, magnitude, doc.hidden].join('|');
     lastLB = lb; lastA = a; lastB = b;
     gamepadFrame = win.requestAnimationFrame(loopPad);
   }
