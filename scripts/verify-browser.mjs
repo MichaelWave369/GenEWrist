@@ -151,7 +151,7 @@ try {
     await page.waitForFunction(() => document.querySelectorAll(".phisurf-item").length === 3, null, { timeout: 3000 });
     await aimAt(0); // OUTER, menu 2
     await page.waitForFunction(() => document.querySelectorAll(".phisurf-item").length === 3 &&
-      document.querySelector(".phisurf-center")?.textContent?.includes("OUTER"), null, { timeout: 3000 });
+      document.querySelector(".phisurf-center")?.textContent?.includes("IDENTITY"), null, { timeout: 3000 });
     await aimAt(1); // A different direction, a real action in canonical outer ring
     await page.mouse.up();
     assert.equal(await dial.isVisible(), false);
