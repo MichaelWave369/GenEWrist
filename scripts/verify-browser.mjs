@@ -188,7 +188,6 @@ try {
     await page.waitForTimeout(120); // neutral sample
     await page.evaluate(() => { window.__phisurfPad.axes = [1, 0]; });
     await page.waitForTimeout(120);
-    console.log('PAD STATE', await page.evaluate(() => ({ state: document.querySelector('.phisurf-footer button:nth-child(2)')?.dataset.padDebug, visible: document.visibilityState, axes: window.__phisurfPad?.axes, buttons: window.__phisurfPad?.buttons?.slice(0,5).map(x=>x.pressed), current: [...document.querySelectorAll('.phisurf-item')].map(x=>x.getAttribute('aria-current')) })));
     assert.equal(await dial.locator(".phisurf-item[aria-current=true]").count(), 1);
     await page.evaluate(() => { window.__phisurfPad.buttons[0].pressed = true; });
     await page.waitForFunction(() => document.querySelector(".phisurf-center")?.textContent?.includes("WORLD"), null, { timeout: 3000 });
