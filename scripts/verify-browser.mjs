@@ -171,36 +171,77 @@ try {
         axes: [1, 0],
         buttons: Array.from({ length: 16 }, () => ({ pressed: false })),
       };
+      // Track actual reads by the animation-frame poller. Arbitrary sleeps can
+      // miss the required neutral sample on a busy headless CI runner.
+      window.__phisurfPadReads = 0;
       Object.defineProperty(navigator, "getGamepads", {
         configurable: true,
-        value: () => [window.__phisurfPad],
+        value: () => {
+          window.__phisurfPadReads++;
+          return [window.__phisurfPad];
+        },
       });
     });
+    const waitForPoll = (before) => page.waitForFunction(
+      (count) => window.__phisurfPadReads > count,
+      before,
+      { timeout: 5000 },
+    );
     await dial.getByRole("button", { name: "PAD: OFF" }).click();
-    await page.waitForTimeout(120); // prime edge detection
-    await page.evaluate(() => { window.__phisurfPad.buttons[0].pressed = true; });
-    await page.waitForTimeout(120);
-    assert.equal(await dial.locator(".phisurf-item[aria-current=true]").count(), 0);
-    await page.evaluate(() => {
+    await page.waitForFunction(
+      () => window.__phisurfPadReads >= 2,
+      null,
+      { timeout: 5000 },
+    ); // first poll primes button edges; second observes the held stick
+    let reads = await page.evaluate(() => {
+      window.__phisurfPad.buttons[0].pressed = true;
+      return window.__phisurfPadReads;
+    });
+    await waitForPoll(reads);
+    assert.equal(await dial.locator(".phisurf-item[aria-current=true]").count(), 0,
+      "held stick before neutral cannot arm selection");
+    reads = await page.evaluate(() => {
       window.__phisurfPad.buttons[0].pressed = false;
       window.__phisurfPad.axes = [0, 0];
+      return window.__phisurfPadReads;
     });
-    await page.waitForTimeout(250); // allow neutral sample on slow CI workers
-    await page.evaluate(() => { window.__phisurfPad.axes = [1, 0]; });
+    await waitForPoll(reads); // now the poller has actually sampled neutral
+    reads = await page.evaluate(() => {
+      window.__phisurfPad.axes = [1, 0];
+      return window.__phisurfPadReads;
+    });
+    await waitForPoll(reads);
     await page.waitForFunction(
       () => [...document.querySelectorAll(".phisurf-panel .phisurf-item")]
         .some((el) => el.getAttribute("aria-current") === "true"),
-      null, { timeout: 4000 },
+      null,
+      { timeout: 5000 },
     );
-    await page.evaluate(() => { window.__phisurfPad.buttons[0].pressed = true; });
-    await page.waitForFunction(() => document.querySelector(".phisurf-center")?.textContent?.includes("WORLD"), null, { timeout: 3000 });
+    reads = await page.evaluate(() => {
+      window.__phisurfPad.buttons[0].pressed = true;
+      return window.__phisurfPadReads;
+    });
+    await waitForPoll(reads);
+    await page.waitForFunction(
+      () => document.querySelector(".phisurf-center")?.textContent?.includes("WORLD"),
+      null,
+      { timeout: 5000 },
+    );
     assert.equal(await dial.locator(".phisurf-item").count(), 1);
-    await page.evaluate(() => { window.__phisurfPad.buttons[0].pressed = false; });
-    await page.waitForTimeout(100);
-    assert.equal(await dial.locator(".phisurf-item[aria-current=true]").count(), 0);
+    reads = await page.evaluate(() => {
+      window.__phisurfPad.buttons[0].pressed = false;
+      return window.__phisurfPadReads;
+    });
+    await waitForPoll(reads);
+    assert.equal(await dial.locator(".phisurf-item[aria-current=true]").count(), 0,
+      "submenu cannot select again until stick returns to neutral");
     await dial.getByRole("button", { name: "PAD: ON" }).click();
     await dial.getByRole("button", { name: "CLOSE" }).click();
-    await page.evaluate(() => { delete navigator.getGamepads; delete window.__phisurfPad; });
+    await page.evaluate(() => {
+      delete navigator.getGamepads;
+      delete window.__phisurfPad;
+      delete window.__phisurfPadReads;
+    });
   });
   await check(
     "Field mode reveals six middle-ring modules and nested 3–6–9 mechanism",
