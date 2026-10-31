@@ -135,6 +135,65 @@ try {
     assert.equal(await surf.isVisible(), false);
     assert.equal(await page.locator(".meter").count(), 3);
   });
+  await check("PhiSurf chain-surf traverses two menu levels in one held pointer gesture", async () => {
+    await page.keyboard.press("Shift+Space");
+    const dial = page.getByRole("dialog", { name: "PhiSurf quick navigation" });
+    const center = dial.getByRole("button", { name: "Hold and flick from the center" });
+    const box = await center.boundingBox();
+    const middle = [box.x + box.width / 2, box.y + box.height / 2];
+    const aimAt = async (index) => {
+      const target = await dial.locator(".phisurf-item").nth(index).boundingBox();
+      await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 4 });
+    };
+    await page.mouse.move(...middle);
+    await page.mouse.down();
+    await aimAt(4); // MODULES, menu 1
+    await page.waitForFunction(() => document.querySelectorAll(".phisurf-item").length === 3, null, { timeout: 3000 });
+    await aimAt(0); // OUTER, menu 2
+    await page.waitForFunction(() => document.querySelectorAll(".phisurf-item").length === 3 &&
+      document.querySelector(".phisurf-center")?.textContent?.includes("OUTER"), null, { timeout: 3000 });
+    await aimAt(1); // A different direction, a real action in canonical outer ring
+    await page.mouse.up();
+    assert.equal(await dial.isVisible(), false);
+    assert.notEqual(await page.locator("#workspace-title").innerText(), "A home between worlds.");
+  });
+  await check("PhiSurf pad requires neutral re-arm and does not select a held stick on activation", async () => {
+    await page.keyboard.press("Shift+Space");
+    const dial = page.getByRole("dialog", { name: "PhiSurf quick navigation" });
+    await page.evaluate(() => {
+      window.__phisurfPad = {
+        connected: true,
+        axes: [1, 0],
+        buttons: Array.from({ length: 16 }, () => ({ pressed: false })),
+      };
+      Object.defineProperty(navigator, "getGamepads", {
+        configurable: true,
+        value: () => [window.__phisurfPad],
+      });
+    });
+    await dial.getByRole("button", { name: "PAD: OFF" }).click();
+    await page.waitForTimeout(120); // prime edge detection
+    await page.evaluate(() => { window.__phisurfPad.buttons[0].pressed = true; });
+    await page.waitForTimeout(120);
+    assert.equal(await dial.locator(".phisurf-item[aria-current=true]").count(), 0);
+    await page.evaluate(() => {
+      window.__phisurfPad.buttons[0].pressed = false;
+      window.__phisurfPad.axes = [0, 0];
+    });
+    await page.waitForTimeout(120); // neutral sample
+    await page.evaluate(() => { window.__phisurfPad.axes = [1, 0]; });
+    await page.waitForTimeout(120);
+    assert.equal(await dial.locator(".phisurf-item[aria-current=true]").count(), 1);
+    await page.evaluate(() => { window.__phisurfPad.buttons[0].pressed = true; });
+    await page.waitForFunction(() => document.querySelector(".phisurf-center")?.textContent?.includes("WORLD"), null, { timeout: 3000 });
+    assert.equal(await dial.locator(".phisurf-item").count(), 1);
+    await page.evaluate(() => { window.__phisurfPad.buttons[0].pressed = false; });
+    await page.waitForTimeout(100);
+    assert.equal(await dial.locator(".phisurf-item[aria-current=true]").count(), 0);
+    await dial.getByRole("button", { name: "PAD: ON" }).click();
+    await dial.getByRole("button", { name: "CLOSE" }).click();
+    await page.evaluate(() => { delete navigator.getGamepads; delete window.__phisurfPad; });
+  });
   await check(
     "Field mode reveals six middle-ring modules and nested 3–6–9 mechanism",
     async () => {
