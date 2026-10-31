@@ -238,7 +238,8 @@ export function createXRSurface({
         c.textAlign = "start";
         if (item.enabled) {
           targets.push({
-            id, shape: "annular-sector", cx, cy, inner, outer,
+            id, shape: "annular-sector", cx, cy,
+            inner: inner + 4, outer: outer - 4, gapRadians: 0.035,
             sector: i, count,
             action: () => { void surf.activate(i); },
           });
