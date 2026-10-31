@@ -84,7 +84,6 @@ test("blocked storage still permits nonpersistent import and explicit export", (
 test("PhiSurf keeps six canonical destinations while exposing optional shortcuts", async () => {
   const w = createWrist();
   const bridge = createOperatorPassportBridge();
-  w.toggleFavorite("sigl-designer");
   let tree = phiSurfTree(w.snapshot(), { operatorRewards: [] });
   assert.equal(tree.children.length, 6);
   assert.equal(tree.children[4].children.length, 3);
@@ -98,6 +97,7 @@ test("PhiSurf keeps six canonical destinations while exposing optional shortcuts
   await surf.activate(4);
   assert.equal(surf.snapshot().items[3].label, "OPERATOR SHORTCUTS");
   await surf.activate(3);
+  assert.equal(surf.snapshot().items.length, 3);
   assert.equal(surf.snapshot().items[0].kind, "app");
   assert.equal(await surf.activate(0), true);
   assert.equal(w.snapshot().activeApp, "sigl-designer");

@@ -19,8 +19,11 @@ export function phiSurfTree(snapshot, { operatorRewards = [] } = {}) {
     })),
   }));
   // Optional learned shortcut wheel, not a new 3-6-9 module or an authority.
-  const favorites = snapshot.preferences?.favorites || [];
-  const shortcuts = CATALOG.filter((app) => favorites.includes(app.id)).slice(0, 9).map((app) => ({
+  // Core favorites represent world destinations, not bundled apps.
+  // Use a small curated set of existing safe local tools; never reinterpret
+  // favorite world IDs as app IDs or bypass the normal World handoff.
+  const quickAppIds = ["sigl-designer", "snake-toolkit", "journey-log"];
+  const shortcuts = CATALOG.filter((app) => quickAppIds.includes(app.id)).slice(0, 9).map((app) => ({
     id: "operator-app-" + app.id,
     label: app.title,
     kind: "app",

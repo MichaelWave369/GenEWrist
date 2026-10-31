@@ -10,7 +10,7 @@ An original, MIT-licensed, dependency-free, local-first creative console and reu
 
 ## ΦOperator Universal Passport bridge (Rung 3 candidate)
 
-The desktop Gen.E.Wrist console now accepts an **explicitly exported** PhiOperator v1 Passport JSON through **Device Settings → Operator Passport Bridge**. Rank 2 Standard creates a cosmetic ΦSURF Operator Shortcuts submenu (using existing favorited modules); Rank 3 Standard enables an optional wrist pulse visual. The six root ΦSURF destinations and 3/6/9 canonical modules are untouched. No WorldAdapter grants or real permissions are generated.
+The desktop Gen.E.Wrist console now accepts an **explicitly exported** PhiOperator v1 Passport JSON through **Device Settings → Operator Passport Bridge**. Rank 2 Standard creates a cosmetic ΦSURF Operator Shortcuts submenu (three already-bundled local tools); Rank 3 Standard enables an optional wrist pulse visual. The six root ΦSURF destinations and 3/6/9 canonical modules are untouched. No WorldAdapter grants or real permissions are generated.
 
 The import is local, validated, opt-in and reversible. A user can export or remove the imported copy. **No shared browser storage across sites, no hidden sync, no claim that XR hardware has been tested.** The browser-only integration is documented in [the Operator Passport bridge guide](docs/PHIOPERATOR.md). A user-edited Passport is a playful progress indicator, not security proof.
 
