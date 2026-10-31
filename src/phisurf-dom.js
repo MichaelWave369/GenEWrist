@@ -18,7 +18,7 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
     ".phisurf-orbit{width:min(92vw,440px);height:min(92vw,440px);max-height:72vh;position:relative;border:1px solid #2d6e78;border-radius:50%;box-shadow:inset 0 0 70px #0c3943,0 0 0 12px #16384133;background:radial-gradient(circle,#173a45 0%,#071923 65%,#071923 100%)}",
     ".phisurf-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid #4accbf;border-radius:50%;width:112px;height:112px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#e4f8f6;font:800 13px system-ui;text-align:center;background:#06242f;pointer-events:none}",
     ".phisurf-center strong{font-size:30px;color:#74eedf}",
-    ".phisurf-item{position:absolute;width:108px;min-height:48px;transform:translate(-50%,-50%);border:1px solid #539ba5;border-radius:12px;background:#103542;color:#e9f8f5;font:600 11px system-ui;line-height:1.25;cursor:pointer;padding:7px;word-break:normal;touch-action:none}",
+    ".phisurf-item{position:absolute;overflow:hidden;width:108px;min-height:48px;transform:translate(-50%,-50%);border:1px solid #539ba5;border-radius:12px;background:#103542;color:#e9f8f5;font:600 11px system-ui;line-height:1.25;cursor:pointer;padding:7px;word-break:normal;touch-action:none}",
     ".phisurf-item[disabled]{opacity:.38;cursor:not-allowed}",
     ".phisurf-item[aria-current=true],.phisurf-item:hover:not(:disabled){border-color:#ffe3a8;background:#286071;color:white}",
     ".phisurf-footer{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:12px}",
@@ -96,7 +96,8 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
   function mouseIndex(clientX, clientY) {
     const rect = orbit.getBoundingClientRect();
     const x = clientX - (rect.left + rect.width / 2), y = clientY - (rect.top + rect.height / 2);
-    if (Math.hypot(x, y) < Math.max(32, rect.width * 0.15)) return -1;
+    const distance = Math.hypot(x, y);
+    if (distance < Math.max(32, rect.width * 0.15) || distance > rect.width * 0.55) return -1;
     const n = surf.snapshot().items.length;
     return n ? Math.round(((Math.atan2(y, x) + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2)) * n / (Math.PI * 2)) % n : -1;
   }
