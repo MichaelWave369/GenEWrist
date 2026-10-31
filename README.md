@@ -6,6 +6,8 @@ An original, MIT-licensed, dependency-free, local-first creative console and reu
 
 **Universal Mode is who you are. World Mode is what you’re doing.**
 
+**NEW / ΦSURF Rung 1:** A local-first radial quick navigator built *inside* Gen.E.Wrist, not a nineteenth 3–6–9 module. Desktop users can open the dial with **Shift+Space** or the floating ΦSURF control, choose nested modules or destinations, and use an optional explicitly enabled gamepad mode. The shared experimental XR canvas now includes an in-headset ΦSURF dial, operated using existing guarded ray/select input. Host actions remain restricted to current-context commands with explicit existing capability grants; no permission is created by opening the dial. Physical Quest 3 behavior is not yet verified.
+
 ## Try the console
 
 The existing Pages address remains `https://michaelwave369.github.io/GenEWrist/`. The candidate appears there only after human review/merge and a successful Pages deployment. Source preview:
@@ -51,4 +53,4 @@ BTM’s existing v0.2 integration remains untouched. A tested current-game World
 
 Physical Quest 3 acceptance is **pending**. Synthetic stereo and automated tests do not prove comfort, performance or hardware compatibility. Other original fictional modules remain clearly labeled concepts; separate websites do not share a single XR session.
 
-[Architecture](docs/ARCHITECTURE.md) · [WorldAdapter API](docs/ADAPTER_API.md) · [Host patterns](docs/INTEGRATION_PATTERNS.md) · [Provenance](docs/ORIGINS.md) · [Plan](docs/FLAGSHIP_PLAN.md) · [Quest acceptance](docs/QUEST_ACCEPTANCE.md) · [Evidence](docs/IMPLEMENTATION_EVIDENCE.md)
+[PhiSurf controls and boundaries](docs/PHISURF.md) · [Architecture](docs/ARCHITECTURE.md) · [WorldAdapter API](docs/ADAPTER_API.md) · [Host patterns](docs/INTEGRATION_PATTERNS.md) · [Provenance](docs/ORIGINS.md) · [Plan](docs/FLAGSHIP_PLAN.md) · [Quest acceptance](docs/QUEST_ACCEPTANCE.md) · [Evidence](docs/IMPLEMENTATION_EVIDENCE.md)

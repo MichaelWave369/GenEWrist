@@ -1,4 +1,5 @@
 import { RINGS, ringItems } from "./catalog.js";
+import { createPhiSurf } from "./phisurf.js";
 import { BUNDLED_APPS } from "./application-registry.js";
 import { drawSIGL, forgeLine } from "./content.js";
 /** One reviewed Canvas presentation, shared core navigation, bounded hit targets. */
@@ -20,6 +21,9 @@ export function createXRSurface({
   art.height = 480;
   const c = canvas.getContext("2d"),
     targets = [];
+  const surf = createPhiSurf({ wrist, onError: (error) => onNotice(error.message) });
+  let surfRevision = 0;
+  const unsubscribeSurf = surf.subscribe(() => { surfRevision++; });
   let page = 0,
     pending = null,
     permissions = false,
@@ -88,7 +92,8 @@ export function createXRSurface({
         "back",
         "BACK",
         () => {
-          if (pending) pending = null;
+          if (surf.snapshot().open) surf.back();
+          else if (pending) pending = null;
           else if (permissions) permissions = false;
           else wrist.back();
         },
@@ -133,15 +138,19 @@ export function createXRSurface({
       wrist.navigate("atlas");
       wrist.setMode("field");
     });
+    button("surf", 704, 696, 142, 49, "ΦSURF", () => {
+      if (pending || permissions) return;
+      surf.snapshot().open ? surf.close() : surf.open();
+    });
     button(
       "expand",
-      704,
+      854,
       696,
-      296,
+      146,
       49,
       wrist.snapshot().preferences.mode === "glance"
-        ? "EXPAND FIELD"
-        : "MINIMIZE / GLANCE",
+        ? "EXPAND"
+        : "GLANCE",
       () =>
         wrist.setMode(
           wrist.snapshot().preferences.mode === "glance" ? "field" : "glance",
@@ -176,6 +185,42 @@ export function createXRSurface({
     text("GEN.E.WRIST", 28, 51, 32, "#edc591");
     text("FIELD ENGINE / 03", 660, 50, 24, "#82aeb8");
     nav();
+    if (surf.snapshot().open && !pending && !permissions) {
+      const dial = surf.snapshot();
+      c.fillStyle = "#081923";
+      c.fillRect(24, 160, 976, 522);
+      c.strokeStyle = "#52b6b1";
+      c.lineWidth = 2;
+      c.strokeRect(24, 160, 976, 522);
+      text("ΦSURF / " + dial.title, 50, 200, 31, "#62e5ed");
+      text("POINT · SELECT · NAVIGATE", 576, 200, 21, "#b7cbd0");
+      c.beginPath();
+      c.arc(512, 417, 176, 0, Math.PI * 2);
+      c.strokeStyle = "#41717b";
+      c.stroke();
+      c.beginPath();
+      c.arc(512, 417, 69, 0, Math.PI * 2);
+      c.strokeStyle = "#62e5ed";
+      c.stroke();
+      text("Φ", 501, 425, 34, "#edc591");
+      dial.items.forEach((item, i) => {
+        const a = -Math.PI / 2 + (Math.PI * 2 * i) / dial.items.length;
+        const x = 512 + 204 * Math.cos(a), y = 419 + 204 * Math.sin(a);
+        button(
+          "surf-item-" + i,
+          x - 70,
+          y - 25,
+          140,
+          50,
+          item.label,
+          () => { void surf.activate(i); },
+          item.enabled,
+        );
+      });
+      button("surf-back", 52, 619, 205, 49, "← DIAL BACK", () => surf.back());
+      button("surf-close", 755, 619, 215, 49, "CLOSE DIAL", () => surf.close());
+      return;
+    }
     if (pending) {
       text("CONFIRM WORLD HANDOFF", 40, 223, 34, "#edc591");
       text(pending.title, 40, 288, 32);
@@ -613,16 +658,20 @@ export function createXRSurface({
   return Object.freeze({
     canvas,
     targets,
+    get surfRevision() { return surfRevision; },
     render,
     setHover(value) {
       hover = value;
     },
     reset() {
+      surf.close();
       pending = null;
       permissions = false;
       page = 0;
     },
     destroy() {
+      unsubscribeSurf();
+      surf.dispose();
       targets.length = 0;
       canvas.width = canvas.height = art.width = art.height = 1;
     },

@@ -8,6 +8,7 @@ The existing dependency-free ES module architecture is retained. No framework mi
 | --- | --- |
 | `catalog.js` | Canonical module names, IDs, ring membership and honest implementation labels |
 | `core.js` | Universal navigation/history, app selection, preferences, world directory and ephemeral host connection |
+| `phisurf.js`, `phisurf-dom.js` | Ephemeral contextual radial menu model and optional browser presentation; no new app catalog entries or persistent command history |
 | `world-adapter.js` | API 1 validation, reviewed layout/components, explicit grants, subscriptions, context filtering, cancellation and cleanup |
 | `bridge.js`, `adapters/btm.js` | Legacy API compatibility and current BTM WorldAdapter example |
 | `application-registry.js` | Reviewed, bundled app metadata, declared local capabilities and launch allowlist |
@@ -27,6 +28,10 @@ Persistent user preferences: theme, text size, contrast, reduced motion, pointer
 User-owned content is saved only through deliberate SIGL/Journal actions. Imports are bounded JSON, validated before replacement, and strip unknown fields. Invalid imports leave existing content untouched. Storage failures keep a session copy with export instructions. Resetting settings does not erase creative content.
 
 Ephemeral host state: identity, context, allowlisted status, live grants, capture flags and action completion. None enters preference/content stores, import/export archives, URL parameters, telemetry or the next world’s saves. Host subscriptions replace polling. Leaving a host or ending standalone XR aborts requests, unsubscribes, releases capture and removes contextual controls.
+
+## PhiSurf Rung 1
+
+The navigation model derives reviewed destinations, canonical 3/6/9 module groups, and allowlisted currently-visible WorldAdapter controls from the shared wrist snapshot. Selecting a host action calls the existing capability-gated `requestWorldAction` method. Its pending/denied state is not converted into a grant. Menus are capped to nine options per page, with nested overflow for host contexts. The browser overlay supports touch/pointer, keyboard and opt-in gamepad. The experimental XR canvas supports pointing and guarded trigger selection, **not** a continuous tracked XR wrist-flick gesture; that remains a later device-acceptance feature.
 
 ## Navigation safety
 
