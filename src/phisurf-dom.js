@@ -23,7 +23,7 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
     ".phisurf-item[aria-current=true],.phisurf-item:hover:not(:disabled){border-color:#ffe3a8;background:#286071;color:white}",
     ".phisurf-footer{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:12px}",
     ".phisurf-footer button{background:#12323e;color:#e8f3f0;border:1px solid #5b8792;border-radius:10px;padding:9px 13px;cursor:pointer;font:600 12px system-ui}",
-    ".phisurf-hint{position:absolute;top:10px;left:10px;right:10px;text-align:center;color:#b8d0d5;font:12px system-ui}",
+    ".phisurf-hint{position:absolute;top:10px;left:10px;right:10px;text-align:center;color:#b8d0d5;font:12px system-ui;pointer-events:none}",
     "@media(prefers-reduced-motion:reduce){.phisurf-orbit,.phisurf-item{transition:none!important}}",
     "@media(max-width:480px){.phisurf-launch{right:9px;bottom:9px}.phisurf-item{width:90px;font-size:10px;min-height:43px}.phisurf-center{width:88px;height:88px}}",
   ].join("\n");
@@ -43,7 +43,7 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
   panel.append(orbit);
   const hint = doc.createElement("p");
   hint.className = "phisurf-hint";
-  hint.textContent = "HOLD · FLICK · RELEASE  /  ESC TO BACK";
+  hint.textContent = "HOLD · HOVER ON SUBMENU TO DIVE · FLICK · RELEASE";
   const footer = doc.createElement("div");
   footer.className = "phisurf-footer";
   const back = doc.createElement("button");
@@ -56,7 +56,7 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
   orbit.append(hint, footer);
   root.append(style, launch, panel);
   let gesture = null, padEnabled = false, gamepadFrame = 0, lastLB = false;
-  let lastA = false, lastB = false, lastSelected = -1, destroyed = false;
+  let lastA = false, lastB = false, padPrimed = false, padNeedsNeutral = true, destroyed = false;
   let focusBeforeOpen = null, paintedMenu = "";
   function paint() {
     if (destroyed) return;
@@ -118,7 +118,7 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
   const pointerDown = (e) => {
     if (e.button !== 0 || gesture) return;
     e.preventDefault();
-    gesture = { id: e.pointerId };
+    gesture = { id: e.pointerId, timer: null, rearmAngle: null };
     surf.open();
     launch.setPointerCapture?.(e.pointerId);
   };
@@ -126,21 +126,64 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
     if (e.button !== 0 || gesture || !surf.snapshot().open) return;
     e.preventDefault();
     e.stopPropagation();
-    gesture = { id: e.pointerId };
-    e.currentTarget.setPointerCapture?.(e.pointerId);
+    gesture = { id: e.pointerId, timer: null, rearmAngle: null };
+    orbit.setPointerCapture?.(e.pointerId);
+  }
+  // A held pointer can dive down multiple nested menus without releasing.
+  // Deliberate dwell avoids accidental submenu traversal from a quick flick.
+  // After each dive, require a change in direction or a center reset before
+  // any next-level action can be selected.
+  function clearDwell(g = gesture) {
+    if (g?.timer != null) win.clearTimeout(g.timer);
+    if (g) g.timer = null;
+  }
+  function hoverGesture(clientX, clientY, allowDwell = true) {
+    const g = gesture;
+    if (!g || !surf.snapshot().open) return -1;
+    clearDwell(g);
+    const rect = orbit.getBoundingClientRect();
+    const x = clientX - rect.left - rect.width / 2;
+    const y = clientY - rect.top - rect.height / 2;
+    const angle = Math.atan2(y, x);
+    if (g.rearmAngle !== null) {
+      const delta = Math.abs(Math.atan2(Math.sin(angle - g.rearmAngle), Math.cos(angle - g.rearmAngle)));
+      if (Math.hypot(x, y) < Math.max(32, rect.width * 0.15) || delta >= 0.5) {
+        g.rearmAngle = null;
+      } else {
+        surf.select(-1);
+        return -1;
+      }
+    }
+    const index = mouseIndex(clientX, clientY);
+    surf.select(index);
+    if (!allowDwell || index < 0) return index;
+    const before = surf.snapshot();
+    const item = before.items[index];
+    if (item?.kind !== "menu" || !item.enabled) return index;
+    const pathKey = before.path.join("/");
+    const itemId = item.id;
+    g.timer = win.setTimeout(() => {
+      if (destroyed || gesture !== g || !surf.snapshot().open) return;
+      const latest = surf.snapshot();
+      if (latest.path.join("/") !== pathKey || latest.items[index]?.id !== itemId || latest.selected !== index) return;
+      g.timer = null;
+      g.rearmAngle = angle;
+      void surf.activate(index);
+    }, 290);
+    return index;
   }
   const pointerMove = (e) => {
     if (gesture?.id !== e.pointerId) return;
-    surf.select(mouseIndex(e.clientX, e.clientY));
+    hoverGesture(e.clientX, e.clientY);
   };
   const pointerUp = (e) => {
     if (gesture?.id !== e.pointerId) return;
+    const i = hoverGesture(e.clientX, e.clientY, false);
+    clearDwell();
     gesture = null;
-    const i = mouseIndex(e.clientX, e.clientY);
-    surf.select(i);
     if (i >= 0) void surf.activate(i);
   };
-  const pointerCancel = () => { gesture = null; surf.close(); };
+  const pointerCancel = () => { clearDwell(); gesture = null; surf.close(); };
   launch.addEventListener("pointerdown", pointerDown);
   doc.addEventListener("pointermove", pointerMove);
   doc.addEventListener("pointerup", pointerUp);
@@ -179,31 +222,61 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
   function loopPad() {
     if (destroyed || !padEnabled) return;
     const gp = win.navigator.getGamepads?.()?.find((p) => p && p.connected);
-    if (gp && !doc.hidden) {
-      const lb = Boolean(gp.buttons?.[4]?.pressed);
-      const a = Boolean(gp.buttons?.[0]?.pressed);
-      const b = Boolean(gp.buttons?.[1]?.pressed);
-      if (lb && !lastLB && !surf.snapshot().open) surf.open();
-      if (surf.snapshot().open) {
-        const x = gp.axes?.[0] || 0, y = gp.axes?.[1] || 0;
-        if (Math.hypot(x, y) > 0.55) {
-          const n = surf.snapshot().items.length;
-          if (n) surf.select(radialIndex(x, y, n, { inner: 0.55 }));
-        } else if (lastSelected !== -1) surf.select(-1);
-        if (lastLB && !lb && surf.snapshot().selected >= 0) void surf.activate(surf.snapshot().selected);
-        else if (a && !lastA && surf.snapshot().selected >= 0) void surf.activate(surf.snapshot().selected);
-        if (b && !lastB) surf.back();
-      }
-      lastLB = lb; lastA = a; lastB = b;
-      lastSelected = surf.snapshot().selected;
+    if (!gp || doc.hidden) {
+      padPrimed = false;
+      padNeedsNeutral = true;
+      lastLB = lastA = lastB = false;
+      gamepadFrame = win.requestAnimationFrame(loopPad);
+      return;
     }
+    const lb = Boolean(gp.buttons?.[4]?.pressed);
+    const a = Boolean(gp.buttons?.[0]?.pressed);
+    const b = Boolean(gp.buttons?.[1]?.pressed);
+    // Enabling pad mode while buttons are already held must never trigger them.
+    if (!padPrimed) {
+      lastLB = lb; lastA = a; lastB = b;
+      padPrimed = true;
+      gamepadFrame = win.requestAnimationFrame(loopPad);
+      return;
+    }
+    if (lb && !lastLB && !surf.snapshot().open) {
+      surf.open();
+      padNeedsNeutral = true;
+    }
+    const x = gp.axes?.[0] || 0;
+    const y = gp.axes?.[1] || 0;
+    const magnitude = Math.hypot(x, y);
+    if (surf.snapshot().open) {
+      if (magnitude <= 0.35) {
+        padNeedsNeutral = false;
+        surf.select(-1);
+      } else if (!padNeedsNeutral && magnitude >= 0.63) {
+        surf.select(radialIndex(x, y, surf.snapshot().items.length, { inner: 0.63 }));
+      } else {
+        surf.select(-1);
+      }
+      if (b && !lastB) {
+        surf.back();
+        padNeedsNeutral = true;
+      } else if (((lastLB && !lb) || (a && !lastA)) && surf.snapshot().selected >= 0) {
+        const index = surf.snapshot().selected;
+        padNeedsNeutral = true;
+        void surf.activate(index);
+      }
+    }
+    lastLB = lb; lastA = a; lastB = b;
     gamepadFrame = win.requestAnimationFrame(loopPad);
   }
   pad.addEventListener("click", () => {
     padEnabled = !padEnabled;
     pad.textContent = padEnabled ? "PAD: ON" : "PAD: OFF";
     if (padEnabled) loopPad();
-    else { win.cancelAnimationFrame(gamepadFrame); lastLB = false; lastA = false; lastB = false; }
+    else {
+      win.cancelAnimationFrame(gamepadFrame);
+      padPrimed = false; padNeedsNeutral = true;
+      lastLB = lastA = lastB = false;
+      surf.select(-1);
+    }
   });
   paint();
   return Object.freeze({
@@ -214,6 +287,8 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
       if (destroyed) return;
       destroyed = true;
       win.cancelAnimationFrame(gamepadFrame);
+      clearDwell();
+      gesture = null;
       launch.removeEventListener("pointerdown", pointerDown);
       doc.removeEventListener("pointermove", pointerMove);
       doc.removeEventListener("pointerup", pointerUp);

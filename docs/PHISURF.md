@@ -1,6 +1,6 @@
-# ΦSURF Rung 1 · Gen.E.Wrist quick navigation
+# ΦSURF · Gen.E.Wrist quick navigation
 
-**Status:** Rung 1 merged; Rung 2 input refinement candidate. This is a built-in navigation module, not a new application, host, or replacement for the 3–6–9 architecture.
+**Status:** Rungs 1–2 merged; Rung 3 chain-surf and controller safety candidate. This is a built-in navigation module, not a new application, host, or replacement for the 3–6–9 architecture.
 
 ## Supported controls
 
@@ -11,9 +11,9 @@
 | Browser gamepad | Manually turn PAD: ON in the dial, then LB | Left stick to aim and release LB, or A to select | B to go back |
 | Experimental embedded XR | Existing wrist panel's ΦSURF button | Guarded controller ray and trigger selecting radial options | DIAL BACK / CLOSE DIAL |
 
-Rung 2 introduces a **center-origin gesture**: open PhiSurf, then press the Φ center, move into a radial sector and release. This is a single-level selection gesture, not continuous navigation through multiple nested levels. The same pure radial-sector math handles mouse and gamepad direction. Selection highlight changes do not rebuild the center while its pointer is captured. Keyboard focus stays within the open dial and returns to the previous control after closing.
+Rung 3 adds optional **chain-surf** in the browser dial. While the center gesture remains held, aim at a submenu for roughly 290 ms to dive into it, then change direction (or return to the center) before selecting at the next level. A fast flick-and-release still selects just one level. Releasing without re-arming after a dive does nothing, so staying on the same heading cannot silently trigger a child action. Multi-level chain-surf is a browser pointer feature; it is **not** Quest hand/controller gesture tracking.\n\nRung 2 introduces a **center-origin gesture**: open PhiSurf, then press the Φ center, move into a radial sector and release. This is a single-level selection gesture, not continuous navigation through multiple nested levels. The same pure radial-sector math handles mouse and gamepad direction. Selection highlight changes do not rebuild the center while its pointer is captured. Keyboard focus stays within the open dial and returns to the previous control after closing.
 
-Gamepad is **off by default**. The browser viewer must opt in to polling; this avoids taking control from a game in a host app. XR uses the existing host-owned controller and input guard, not a new global input hook. There is currently **no physical Quest 3 flick-motion calibration** or guarantee of wrist comfort.
+Gamepad navigation now requires a neutral stick after activation, each submenu traversal, and Back. It ignores already-held buttons when enabled or after reconnect/visibility loss. Selection requires an explicit A press or LB release, not a held stick.\n\nGamepad is **off by default**. The browser viewer must opt in to polling; this avoids taking control from a game in a host app. XR uses the existing host-owned controller and input guard, not a new global input hook. There is currently **no physical Quest 3 flick-motion calibration** or guarantee of wrist comfort.
 
 ## Menu architecture
 
@@ -35,4 +35,4 @@ Run `npm run check && npm test && npm run build && npm run verify:static && npm 
 
 ## Follow-up rung
 
-After the Rung 1 implementation is reviewed and the same headless engine is verified in a second consumer, consider the continuous one-motion nested flick, joystick-neutral debounce, actual Quest controller ergonomics, app-specific quick actions, and optional extraction into a PhiSurf repository. Do not fork Gen.E.Wrist's core or bypass WORLD capability grants.
+After the browser chain-surf behavior is validated, perform **physical Quest 3 acceptance** and host input arbitration in a separate PR. Consider a deliberate VR radial-gesture adapter and a second consumer only after testing wrist placement, neutral trigger re-arm, haptics and comfort. Extraction into a standalone PhiSurf repository remains optional. Do not fork Gen.E.Wrist's core or bypass WORLD capability grants.
