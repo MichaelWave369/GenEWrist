@@ -68,7 +68,7 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
       orbit.querySelectorAll(".phisurf-item,.phisurf-center").forEach((el) => el.remove());
       return;
     }
-    const menuKey = JSON.stringify([s.path, s.items.map((item) => [item.id, item.enabled])]);
+    const menuKey = JSON.stringify([s.path, s.title, s.items.map((item) => [item.id, item.label, item.enabled])]);
     if (menuKey === paintedMenu) {
       orbit.querySelectorAll(".phisurf-item").forEach((el, i) => el.setAttribute("aria-current", String(s.selected === i)));
       return;
