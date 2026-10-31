@@ -1,4 +1,5 @@
 import { createWrist } from "./core.js";
+import { mountPhiSurf } from "./phisurf-dom.js";
 import { RINGS } from "./catalog.js";
 import { createApplicationRegistry } from "./application-registry.js";
 import { createDemoHost } from "./adapters/demos.js";
@@ -846,6 +847,7 @@ window.addEventListener("offline", networkState);
 networkState();
 const stop = wrist.subscribe(() => render());
 render();
+const surfUI = mountPhiSurf({ wrist, onNotice: announce });
 if (matchMedia("(prefers-reduced-motion: reduce)").matches)
   document.body.classList.add("reduced-motion");
 registerOfflineShell({ onState: (message) => announce(message) });
@@ -855,6 +857,7 @@ window.addEventListener(
     disposed = true;
     clearTimeout(noticeTimer);
     stop();
+    surfUI.dispose();
     wrist.dispose();
     xrController?.end().catch(() => {});
   },
