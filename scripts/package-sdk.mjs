@@ -18,6 +18,8 @@ await writeFile(
       private: true,
       exports: {
         "./core": "./src/core.js",
+        "./phisurf": "./src/phisurf.js",
+        "./phisurf-dom": "./src/phisurf-dom.js",
         "./world-adapter": "./src/world-adapter.js",
         "./presentation": "./src/presentation.js",
         "./xr-surface": "./src/xr-surface.js",
