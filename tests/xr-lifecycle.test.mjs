@@ -233,3 +233,68 @@ test("simulated controller input waits for the new rendered targets and neutral 
     env.restore();
   }
 });
+
+test("PhiSurf XR surface renders reachable radial sectors and honours host grants", async () => {
+  const env = installFakeXR();
+  const wrist = createWrist();
+  const events = [];
+  let surface;
+  try {
+    wrist.setMode("field");
+    surface = (await import("../src/xr-surface.js")).createXRSurface({ wrist });
+    surface.render();
+    surface.targets.find((t) => t.id === "surf").action();
+    surface.render();
+    let sectors = surface.targets.filter((t) => t.shape === "annular-sector");
+    assert.equal(sectors.length, 6);
+    assert(sectors.every((t) => t.inner > 0 && t.outer > t.inner && t.count === 6));
+    const { targetAt } = await import("../src/xr-interaction.js");
+    assert.equal(targetAt(sectors, { u: 0.5, v: 423 / 768 }), null, "center is not an action");
+    assert.equal(targetAt(sectors, { u: 0.5, v: (423 - 134) / 768 })?.id, "surf-item-0");
+    sectors.find((t) => t.sector === 4).action(); // 3·6·9 MODULES
+    surface.render();
+    sectors = surface.targets.filter((t) => t.shape === "annular-sector");
+    assert.equal(sectors.length, 3);
+    sectors.find((t) => t.sector === 2).action(); // nine Refuge modules
+    surface.render();
+    assert.equal(surface.targets.filter((t) => t.shape === "annular-sector").length, 9);
+    assert(surface.targets.some((t) => t.id === "surf-back"));
+    surface.targets.find((t) => t.id === "surf-close").action();
+    surface.render();
+    assert.equal(surface.targets.filter((t) => t.shape === "annular-sector").length, 0);
+
+    const { createWorldAdapter } = await import("../src/world-adapter.js");
+    const adapter = createWorldAdapter({
+      manifest: {
+        apiVersion: 1, id: "rung4-host", title: "Rung 4 test host",
+        initialContext: "action", capabilities: ["use"],
+        actions: [{ id: "fire", label: "FIRE", capability: "use" }],
+        contexts: [{
+          id: "action", title: "Action", layout: "combat", fields: [],
+          controls: [{ action: "fire", label: "FIRE" }],
+        }],
+      },
+      readState: () => ({ contextId: "action", status: {} }),
+      actions: { fire: () => { events.push("fired"); return true; } },
+    });
+    wrist.connectWorld(adapter); // nothing granted
+    surface.render();
+    surface.targets.find((t) => t.id === "surf").action();
+    surface.render();
+    surface.targets.find((t) => t.id === "surf-item-2").action(); // WORLD menu
+    surface.render();
+    assert(!surface.targets.some((t) => t.id === "surf-item-1"), "ungranted host command cannot be targeted");
+    assert.deepEqual(events, []);
+    wrist.setWorldGrants(["use"]);
+    surface.render();
+    const fire = surface.targets.find((t) => t.id === "surf-item-1");
+    assert(fire, "granted current-context action should have a radial sector");
+    fire.action();
+    await Promise.resolve();
+    assert.deepEqual(events, ["fired"]);
+  } finally {
+    surface?.destroy();
+    wrist.dispose();
+    env.restore();
+  }
+});
