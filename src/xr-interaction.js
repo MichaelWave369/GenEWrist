@@ -38,9 +38,14 @@ export function targetAt(targets, hit) {
   const x = hit.u * 1024, y = hit.v * 768;
   return targets.find((t) => {
     if (t.shape === "annular-sector") {
-      return radialIndex(x - t.cx, y - t.cy, t.count, {
+      const dx = x - t.cx, dy = y - t.cy;
+      const center = -Math.PI / 2 + t.sector * Math.PI * 2 / t.count;
+      const delta = Math.atan2(Math.sin(Math.atan2(dy, dx) - center),
+        Math.cos(Math.atan2(dy, dx) - center));
+      const half = Math.PI / t.count;
+      return radialIndex(dx, dy, t.count, {
         inner: t.inner, outer: t.outer,
-      }) === t.sector;
+      }) === t.sector && Math.abs(delta) <= half - (t.gapRadians || 0);
     }
     return x >= t.x && x <= t.x + t.w && y >= t.y && y <= t.y + t.h;
   }) || null;
