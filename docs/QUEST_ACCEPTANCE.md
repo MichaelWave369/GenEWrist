@@ -8,7 +8,8 @@ Before release as a qualified headset integration, use the built HTTPS Pages con
 - [ ] Inspect the procedural case, bezel, strap, illuminated rings and optional synthwave dock.
 - [ ] Raise the nonpointer wrist/controller in front at a comfortable distance. Check hand-adjacent placement, excessive proximity protection and tracking-loss fallback.
 - [ ] Switch pointer handedness; test left-handed operation and controller fallback with optional hand input unavailable.
-- [ ] Test right/left controller rays, target feedback, exact press/release selection and held-trigger entry suppression.\n- [ ] Open ΦSURF in VR; verify 3/6/9 annular sectors, nonselectable center, gaps between sectors, legible two-line labels, disabled sectors and cursor hover. Verify DIAL BACK/CLOSE and persistent navigation dismiss the dial.
+- [ ] Test right/left controller rays, target feedback, exact press/release selection and held-trigger entry suppression.
+- [ ] Open ΦSURF in VR; verify 3/6/9 annular sectors, nonselectable center, gaps between sectors, legible two-line labels, disabled sectors and cursor hover. Verify DIAL BACK/CLOSE and persistent navigation dismiss the dial.
 - [ ] Release/re-arm after tracking loss, input source replacement, visibility changes, recenter and context changes.
 - [ ] Select all 3/6/9 rings, open actual modules and read full labels; test keyboard/focus alternatives in 2D.
 - [ ] In World Mode, connect each explicitly simulated host, grant only a selected action, revoke, disconnect and return Home/Universal/Back.
