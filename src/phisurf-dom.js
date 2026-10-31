@@ -243,10 +243,10 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
       surf.open();
       padNeedsNeutral = true;
     }
+    const x = gp.axes?.[0] || 0;
+    const y = gp.axes?.[1] || 0;
+    const magnitude = Math.hypot(x, y);
     if (surf.snapshot().open) {
-      const x = gp.axes?.[0] || 0;
-      const y = gp.axes?.[1] || 0;
-      const magnitude = Math.hypot(x, y);
       if (magnitude <= 0.35) {
         padNeedsNeutral = false;
         surf.select(-1);
