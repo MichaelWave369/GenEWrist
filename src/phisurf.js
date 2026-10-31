@@ -23,7 +23,7 @@ export function phiSurfTree(snapshot, { operatorRewards = [] } = {}) {
   // Use a small curated set of existing safe local tools; never reinterpret
   // favorite world IDs as app IDs or bypass the normal World handoff.
   const quickAppIds = ["sigl-designer", "snake-toolkit", "journey-log"];
-  const shortcuts = CATALOG.filter((app) => quickAppIds.includes(app.id)).slice(0, 9).map((app) => ({
+  const shortcuts = quickAppIds.map((id) => CATALOG.find((app) => app.id === id)).filter(Boolean).map((app) => ({
     id: "operator-app-" + app.id,
     label: app.title,
     kind: "app",
