@@ -101,6 +101,20 @@ try {
     },
   );
   await evidence("01-desktop-glance");
+  await check("PhiSurf keyboard dial traverses the canonical nested menus", async () => {
+    await page.keyboard.press("Shift+Space");
+    const surf = page.getByRole("dialog", { name: "PhiSurf quick navigation" });
+    await surf.waitFor();
+    assert.equal(await surf.locator(".phisurf-item").count(), 6);
+    await surf.locator(".phisurf-item").nth(4).click();
+    assert.equal(await surf.locator(".phisurf-item").count(), 3);
+    await surf.locator(".phisurf-item").nth(1).click();
+    assert.equal(await surf.locator(".phisurf-item").count(), 6);
+    await surf.getByRole("button", { name: "← BACK" }).click();
+    assert.equal(await surf.locator(".phisurf-item").count(), 3);
+    await surf.getByRole("button", { name: "CLOSE" }).click();
+    assert.equal(await surf.isVisible(), false);
+  });
   await check(
     "Field mode reveals six middle-ring modules and nested 3–6–9 mechanism",
     async () => {
