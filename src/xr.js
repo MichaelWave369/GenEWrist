@@ -203,6 +203,7 @@ export async function launchExperimentalXR({
     closed = false,
     dirty = true,
     revision = 0,
+    lastSurfRevision = 0,
     frameId = null,
     hover = null,
     dock = null,
@@ -531,6 +532,12 @@ export async function launchExperimentalXR({
           dirty = true;
         }
         capture(p.mode === "field" || Boolean(hit));
+        if (surface.surfRevision !== lastSurfRevision) {
+          lastSurfRevision = surface.surfRevision;
+          dirty = true;
+          revision++;
+          guard.reset();
+        }
         if (dirty) {
           surface.render();
           gl.activeTexture(gl.TEXTURE0);
