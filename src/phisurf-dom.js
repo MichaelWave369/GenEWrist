@@ -63,14 +63,18 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
     const s = surf.snapshot();
     panel.hidden = !s.open;
     launch.setAttribute("aria-expanded", String(s.open));
-    orbit.querySelectorAll(".phisurf-item,.phisurf-center").forEach((el) => el.remove());
-    if (!s.open) { paintedMenu = ""; return; }
+    if (!s.open) {
+      paintedMenu = "";
+      orbit.querySelectorAll(".phisurf-item,.phisurf-center").forEach((el) => el.remove());
+      return;
+    }
     const menuKey = JSON.stringify([s.path, s.items.map((item) => [item.id, item.enabled])]);
     if (menuKey === paintedMenu) {
       orbit.querySelectorAll(".phisurf-item").forEach((el, i) => el.setAttribute("aria-current", String(s.selected === i)));
       return;
     }
     paintedMenu = menuKey;
+    orbit.querySelectorAll(".phisurf-item,.phisurf-center").forEach((el) => el.remove());
     const center = doc.createElement("button");
     center.type = "button";
     center.setAttribute("aria-label", "Hold and flick from the center");
