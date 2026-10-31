@@ -109,7 +109,12 @@ export function createPhiSurf({ wrist, onError = () => {} } = {}) {
         case "home": wrist.home(); break;
         case "back": wrist.back(); break;
         case "navigate": wrist.navigate(item.value); wrist.setMode("field"); break;
-        case "app": wrist.openApp(item.value); break;
+        case "app": {
+          const app = CATALOG.find((entry) => entry.id === item.value);
+          if (app) wrist.setRing(app.ring);
+          wrist.openApp(item.value);
+          break;
+        }
         case "host": await wrist.requestWorldAction(item.value); break;
         default: return false;
       }
@@ -137,7 +142,9 @@ export function createPhiSurf({ wrist, onError = () => {} } = {}) {
     },
     select(index) {
       const count = node().children?.length || 0;
-      selected = Number.isInteger(index) && index >= 0 && index < count ? index : -1;
+      const next = Number.isInteger(index) && index >= 0 && index < count ? index : -1;
+      if (next === selected) return selected;
+      selected = next;
       notify();
       return selected;
     },
