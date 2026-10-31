@@ -6,7 +6,7 @@ An original, MIT-licensed, dependency-free, local-first creative console and reu
 
 **Universal Mode is who you are. World Mode is what you’re doing.**
 
-**NEW / ΦSURF Rung 1:** A local-first radial quick navigator built *inside* Gen.E.Wrist, not a nineteenth 3–6–9 module. Desktop users can open the dial with **Shift+Space** or the floating ΦSURF control, choose nested modules or destinations, and use an optional explicitly enabled gamepad mode. The shared experimental XR canvas now includes an in-headset ΦSURF dial, operated using existing guarded ray/select input. Host actions remain restricted to current-context commands with explicit existing capability grants; no permission is created by opening the dial. Physical Quest 3 behavior is not yet verified.
+**ΦSURF Rung 1 + Rung 2 refinement:** A local-first radial quick navigator built *inside* Gen.E.Wrist, not a nineteenth 3–6–9 module. Desktop users can open the dial with **Shift+Space** or the floating ΦSURF control, choose nested modules or destinations, and use an optional explicitly enabled gamepad mode. A center-origin **hold / flick / release** gesture and trapped modal keyboard focus reduce accidental actions and improve accessibility. The shared experimental XR canvas now includes an in-headset ΦSURF dial, operated using existing guarded ray/select input. Host actions remain restricted to current-context commands with explicit existing capability grants; no permission is created by opening the dial. Physical Quest 3 behavior is not yet verified.
 
 ## Try the console
 
