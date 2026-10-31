@@ -4,11 +4,11 @@ import { createPhiSurf, radialIndex } from "./phisurf.js";
  * Optional browser presentation. Pointer gestures and keyboard are local;
  * gamepad capture is opt-in to avoid stealing controls from a host game.
  */
-export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} } = {}) {
+export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {}, operatorBridge = null } = {}) {
   if (!root?.appendChild) throw TypeError("Mount root required");
   const doc = root.ownerDocument || document;
   const win = doc.defaultView || window;
-  const surf = createPhiSurf({ wrist, onError: (error) => onNotice(error.message) });
+  const surf = createPhiSurf({ wrist, operatorBridge, onError: (error) => onNotice(error.message) });
   const style = doc.createElement("style");
   style.textContent = [
     ".phisurf-launch{position:fixed;z-index:94;right:20px;bottom:20px;border:1px solid #69e3df;border-radius:50px;background:#092633;color:#c4fff6;padding:14px 19px;font:700 14px system-ui;letter-spacing:.07em;box-shadow:0 8px 24px #0008;cursor:pointer}",

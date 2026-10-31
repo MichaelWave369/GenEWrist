@@ -8,6 +8,12 @@ An original, MIT-licensed, dependency-free, local-first creative console and reu
 
 **ΦSURF Rungs 1–4 candidate:** A local-first radial quick navigator built *inside* Gen.E.Wrist, not a nineteenth 3–6–9 module. Desktop users can open the dial with **Shift+Space** or the floating ΦSURF control, choose nested modules or destinations, and use an optional explicitly enabled gamepad mode. A center-origin **hold / flick / release** gesture and trapped modal keyboard focus reduce accidental actions and improve accessibility. Rung 3 adds optional dwell-to-dive navigation through nested browser menus while the pointer stays held, plus gamepad neutral-rearm protection. Rung 4 adds genuine annular XR menu targets, avoiding overlapping rectangular hitboxes while retaining guarded controller-ray selection. The shared experimental XR canvas now includes an in-headset ΦSURF dial, operated using existing guarded ray/select input. Host actions remain restricted to current-context commands with explicit existing capability grants; no permission is created by opening the dial. Physical Quest 3 behavior is not yet verified.
 
+## ΦOperator Universal Passport bridge (Rung 3 candidate)
+
+The desktop Gen.E.Wrist console now accepts an **explicitly exported** PhiOperator v1 Passport JSON through **Device Settings → Operator Passport Bridge**. Rank 2 Standard creates a cosmetic ΦSURF Operator Shortcuts submenu (three already-bundled local tools); Rank 3 Standard enables an optional wrist pulse visual. The six root ΦSURF destinations and 3/6/9 canonical modules are untouched. No WorldAdapter grants or real permissions are generated.
+
+The import is local, validated, opt-in and reversible. A user can export or remove the imported copy. **No shared browser storage across sites, no hidden sync, no claim that XR hardware has been tested.** The browser-only integration is documented in [the Operator Passport bridge guide](docs/PHIOPERATOR.md). A user-edited Passport is a playful progress indicator, not security proof.
+
 ## Try the console
 
 The existing Pages address remains `https://michaelwave369.github.io/GenEWrist/`. The candidate appears there only after human review/merge and a successful Pages deployment. Source preview:

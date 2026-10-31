@@ -1,5 +1,6 @@
 import { createWrist } from "./core.js";
 import { mountPhiSurf } from "./phisurf-dom.js";
+import { createOperatorPassportBridge, parseOperatorPassport, operatorPassportSummary } from "./operator-passport.js";
 import { RINGS } from "./catalog.js";
 import { createApplicationRegistry } from "./application-registry.js";
 import { createDemoHost } from "./adapters/demos.js";
@@ -23,6 +24,7 @@ const localStore = (() => {
 })();
 const wrist = createWrist({ storage: localStore }),
   content = createContentStore(localStore);
+const operatorBridge = createOperatorPassportBridge({ storage: localStore });
 const registry = createApplicationRegistry({
   launch: (id) => wrist.openApp(id),
 });
@@ -76,6 +78,20 @@ function download(name, data, type) {
   a.download = name;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function refreshOperatorPassport() {
+  const status = operatorBridge.snapshot();
+  document.body.classList.toggle("operator-surf-wheel", status.rewards.includes("phisurf-wheel"));
+  document.body.classList.toggle("operator-wrist-pulse", status.rewards.includes("genewrist-pulse"));
+  const label = $("#operator-passport-status");
+  label.textContent = status.imported
+    ? "Imported Operator Passport • Standard rank " + status.clearedRank +
+      " cleared / 6 • " + (status.rewards.length
+        ? status.rewards.length + " cosmetic integration(s) active."
+        : "More optional cosmetics are available at rank 2.")
+    : "No Operator Passport imported. Normal navigation remains fully available.";
+  $("#operator-passport-clear").disabled = !status.imported;
+  $("#operator-passport-export").disabled = !status.imported;
 }
 function rememberFocus() {
   const active = document.activeElement;
@@ -836,6 +852,40 @@ $("#xr-button").addEventListener("click", async () => {
     button.disabled = false;
   }
 });
+$("#operator-passport-import").addEventListener("change", async (event) => {
+  const file = event.target.files?.[0];
+  event.target.value = "";
+  if (!file) return;
+  if (file.size > 16384) return announce("Operator Passport exceeds the 16 KiB limit.");
+  try {
+    const text = await file.text();
+    const validated = parseOperatorPassport(text);
+    const summary = operatorPassportSummary(validated);
+    if (!confirm(
+      "Import PhiOperator Passport (Standard rank " + summary.clearedRank +
+      " cleared)? This replaces only the previously imported Operator progress. " +
+      "It does not affect your Gen.E.Wrist settings, creative work or World grants."
+    )) return;
+    const state = operatorBridge.import(text);
+    announce(state.persisted
+      ? "Operator Passport imported locally. Optional cosmetics refreshed."
+      : "Operator Passport loaded for this session. Export to keep a backup.");
+  } catch (error) {
+    announce("Operator import rejected: " + error.message);
+  }
+});
+$("#operator-passport-export").addEventListener("click", () => {
+  const text = operatorBridge.export();
+  if (!text) return announce("No Operator Passport has been imported.");
+  download("phioperator-passport-v1.json", text, "application/json");
+  announce("Operator Passport exported.");
+});
+$("#operator-passport-clear").addEventListener("click", () => {
+  if (!operatorBridge.snapshot().imported) return;
+  if (!confirm("Forget the imported Operator Passport in Gen.E.Wrist? This does not change your PhiOperator progress.")) return;
+  operatorBridge.clear();
+  announce("Operator Passport removed here. All normal tools remain available.");
+});
 const networkState = () => {
   $("#network-state").classList.toggle("offline", !navigator.onLine);
   $("#network-state").innerHTML =
@@ -846,8 +896,10 @@ window.addEventListener("online", networkState);
 window.addEventListener("offline", networkState);
 networkState();
 const stop = wrist.subscribe(() => render());
+const stopOperator = operatorBridge.subscribe(refreshOperatorPassport);
 render();
-const surfUI = mountPhiSurf({ wrist, onNotice: announce });
+refreshOperatorPassport();
+const surfUI = mountPhiSurf({ wrist, onNotice: announce, operatorBridge });
 if (matchMedia("(prefers-reduced-motion: reduce)").matches)
   document.body.classList.add("reduced-motion");
 registerOfflineShell({ onState: (message) => announce(message) });
@@ -857,7 +909,9 @@ window.addEventListener(
     disposed = true;
     clearTimeout(noticeTimer);
     stop();
+    stopOperator();
     surfUI.dispose();
+    operatorBridge.dispose();
     wrist.dispose();
     xrController?.end().catch(() => {});
   },

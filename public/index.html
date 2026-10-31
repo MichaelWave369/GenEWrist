@@ -259,6 +259,31 @@
           No account, telemetry or remote code. These preferences stay in this
           browser. Blocked storage falls back to this session.
         </p>
+        <section class="operator-passport-settings" aria-labelledby="operator-passport-heading">
+          <p class="eyebrow">OPTIONAL / PHIOPERATOR ASCENSION</p>
+          <h3 id="operator-passport-heading">Operator Passport bridge</h3>
+          <p class="dim">
+            Export your Passport from PhiOperator and import the JSON here.
+            Rank 2 unlocks PhiSurf Operator Shortcuts; rank 3 adds a Gen.E.Wrist
+            pulse cosmetic. Shortcuts open three bundled local tools and never grant
+            additional WORLD or system permissions.
+          </p>
+          <p id="operator-passport-status" role="status" aria-live="polite">
+            No Operator Passport imported.
+          </p>
+          <div class="operator-passport-actions">
+            <input id="operator-passport-import" type="file" accept=".json,application/json"
+              aria-label="Import PhiOperator Passport JSON" />
+            <label for="operator-passport-import" class="button operator-import-label">IMPORT OPERATOR PASSPORT</label>
+            <button id="operator-passport-export" type="button" class="chip" disabled>EXPORT COPY</button>
+            <button id="operator-passport-clear" type="button" class="chip" disabled>REMOVE IMPORT</button>
+            <a href="https://github.com/MichaelWave369/PhiOperator"
+              target="_blank" rel="noopener noreferrer">PHIOPERATOR PROJECT ↗</a>
+          </div>
+          <p class="dim">Passports are editable progress data, not security credentials.
+            No progress is fetched from other sites automatically.
+            Only explicitly imported data stays in this browser.</p>
+        </section>
         <button id="reset-button" type="button" class="text-button">
           RESET LOCAL SETTINGS
         </button>
