@@ -1,4 +1,4 @@
-import { createPhiSurf } from "./phisurf.js";
+import { createPhiSurf, radialIndex } from "./phisurf.js";
 
 /**
  * Optional browser presentation. Pointer gestures and keyboard are local;
@@ -16,7 +16,7 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
     ".phisurf-panel[hidden]{display:none}",
     ".phisurf-panel{position:fixed;z-index:95;inset:0;background:#031119d9;display:grid;place-items:center}",
     ".phisurf-orbit{width:min(92vw,440px);height:min(92vw,440px);max-height:72vh;position:relative;border:1px solid #2d6e78;border-radius:50%;box-shadow:inset 0 0 70px #0c3943,0 0 0 12px #16384133;background:radial-gradient(circle,#173a45 0%,#071923 65%,#071923 100%)}",
-    ".phisurf-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid #4accbf;border-radius:50%;width:112px;height:112px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#e4f8f6;font:800 13px system-ui;text-align:center;background:#06242f;pointer-events:none}",
+    ".phisurf-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid #4accbf;border-radius:50%;width:112px;height:112px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#e4f8f6;font:800 13px system-ui;text-align:center;background:#06242f;cursor:crosshair;touch-action:none}",
     ".phisurf-center strong{font-size:30px;color:#74eedf}",
     ".phisurf-item{position:absolute;overflow:hidden;width:108px;min-height:48px;transform:translate(-50%,-50%);border:1px solid #539ba5;border-radius:12px;background:#103542;color:#e9f8f5;font:600 11px system-ui;line-height:1.25;cursor:pointer;padding:7px;word-break:normal;touch-action:none}",
     ".phisurf-item[disabled]{opacity:.38;cursor:not-allowed}",
@@ -57,21 +57,34 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
   root.append(style, launch, panel);
   let gesture = null, padEnabled = false, gamepadFrame = 0, lastLB = false;
   let lastA = false, lastB = false, lastSelected = -1, destroyed = false;
-  let focusBeforeOpen = null;
+  let focusBeforeOpen = null, paintedMenu = "";
   function paint() {
     if (destroyed) return;
     const s = surf.snapshot();
     panel.hidden = !s.open;
     launch.setAttribute("aria-expanded", String(s.open));
+    if (!s.open) {
+      paintedMenu = "";
+      orbit.querySelectorAll(".phisurf-item,.phisurf-center").forEach((el) => el.remove());
+      return;
+    }
+    const menuKey = JSON.stringify([s.path, s.title, s.items.map((item) => [item.id, item.label, item.enabled])]);
+    if (menuKey === paintedMenu) {
+      orbit.querySelectorAll(".phisurf-item").forEach((el, i) => el.setAttribute("aria-current", String(s.selected === i)));
+      return;
+    }
+    paintedMenu = menuKey;
     orbit.querySelectorAll(".phisurf-item,.phisurf-center").forEach((el) => el.remove());
-    if (!s.open) return;
-    const center = doc.createElement("div");
+    const center = doc.createElement("button");
+    center.type = "button";
+    center.setAttribute("aria-label", "Hold and flick from the center");
     center.className = "phisurf-center";
     const glyph = doc.createElement("strong");
     glyph.textContent = "Φ";
     const name = doc.createElement("span");
     name.textContent = s.title;
     center.append(glyph, name);
+    center.addEventListener("pointerdown", startCenterGesture);
     orbit.append(center);
     const n = s.items.length;
     s.items.forEach((item, i) => {
@@ -91,15 +104,16 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
   const stop = surf.subscribe((state) => {
     if (state.open && panel.hidden) focusBeforeOpen = doc.activeElement;
     if (!state.open && !panel.hidden && focusBeforeOpen?.isConnected) focusBeforeOpen.focus({ preventScroll: true });
+    const openedNow = state.open && panel.hidden;
     paint();
+    if (openedNow && !gesture) orbit.querySelector(".phisurf-center")?.focus({ preventScroll: true });
   });
   function mouseIndex(clientX, clientY) {
     const rect = orbit.getBoundingClientRect();
     const x = clientX - (rect.left + rect.width / 2), y = clientY - (rect.top + rect.height / 2);
     const distance = Math.hypot(x, y);
     if (distance < Math.max(32, rect.width * 0.15) || distance > rect.width * 0.55) return -1;
-    const n = surf.snapshot().items.length;
-    return n ? Math.round(((Math.atan2(y, x) + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2)) * n / (Math.PI * 2)) % n : -1;
+    return radialIndex(x, y, surf.snapshot().items.length);
   }
   const pointerDown = (e) => {
     if (e.button !== 0 || gesture) return;
@@ -108,6 +122,13 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
     surf.open();
     launch.setPointerCapture?.(e.pointerId);
   };
+  function startCenterGesture(e) {
+    if (e.button !== 0 || gesture || !surf.snapshot().open) return;
+    e.preventDefault();
+    e.stopPropagation();
+    gesture = { id: e.pointerId };
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  }
   const pointerMove = (e) => {
     if (gesture?.id !== e.pointerId) return;
     surf.select(mouseIndex(e.clientX, e.clientY));
@@ -115,7 +136,8 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
   const pointerUp = (e) => {
     if (gesture?.id !== e.pointerId) return;
     gesture = null;
-    const i = surf.snapshot().selected;
+    const i = mouseIndex(e.clientX, e.clientY);
+    surf.select(i);
     if (i >= 0) void surf.activate(i);
   };
   const pointerCancel = () => { gesture = null; surf.close(); };
@@ -133,6 +155,16 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
       e.preventDefault(); surf.open(); return;
     }
     if (!surf.snapshot().open) return;
+    if (e.key === "Tab") {
+      const buttons = [...panel.querySelectorAll("button:not([disabled])")];
+      if (!buttons.length) { e.preventDefault(); return; }
+      const index = buttons.indexOf(doc.activeElement);
+      if (index < 0 || (e.shiftKey && index === 0) || (!e.shiftKey && index === buttons.length - 1)) {
+        e.preventDefault();
+        buttons[e.shiftKey ? buttons.length - 1 : 0].focus();
+      }
+      return;
+    }
     if (e.key === "Escape" || e.key === "Backspace") { e.preventDefault(); e.stopImmediatePropagation(); surf.back(); return; }
     if (e.key === "Enter" && surf.snapshot().selected >= 0) {
       e.preventDefault(); void surf.activate(surf.snapshot().selected); return;
@@ -156,7 +188,7 @@ export function mountPhiSurf({ wrist, root = document.body, onNotice = () => {} 
         const x = gp.axes?.[0] || 0, y = gp.axes?.[1] || 0;
         if (Math.hypot(x, y) > 0.55) {
           const n = surf.snapshot().items.length;
-          if (n) surf.select(Math.round(((Math.atan2(y, x) + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2)) * n / (Math.PI * 2)) % n);
+          if (n) surf.select(radialIndex(x, y, n, { inner: 0.55 }));
         } else if (lastSelected !== -1) surf.select(-1);
         if (lastLB && !lb && surf.snapshot().selected >= 0) void surf.activate(surf.snapshot().selected);
         else if (a && !lastA && surf.snapshot().selected >= 0) void surf.activate(surf.snapshot().selected);

@@ -56,6 +56,20 @@ export function phiSurfTree(snapshot) {
     ],
   };
 }
+/**
+ * Pure direction-to-sector mapper shared by pointer and gamepad adapters.
+ * -1 is a deliberate neutral/cancel state, never an implicit command.
+ */
+export function radialIndex(x, y, count, { inner = 0, outer = Infinity } = {}) {
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isInteger(count) ||
+      count < 1 || count > 9 || !Number.isFinite(inner) || inner < 0 ||
+      !(outer > inner)) return -1;
+  const r = Math.hypot(x, y);
+  if (r <= inner || r > outer) return -1;
+  const sector = ((Math.atan2(y, x) + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2)) *
+    count / (Math.PI * 2);
+  return Math.round(sector) % count;
+}
 const publicItem = (item) => Object.freeze({
   id: item.id, label: item.label, kind: item.kind,
   enabled: item.enabled !== false,

@@ -115,6 +115,26 @@ try {
     await surf.getByRole("button", { name: "CLOSE" }).click();
     assert.equal(await surf.isVisible(), false);
   });
+  await check("PhiSurf supports center-origin hold-flick-release and keeps keyboard focus inside", async () => {
+    await page.keyboard.press("Shift+Space");
+    const surf = page.getByRole("dialog", { name: "PhiSurf quick navigation" });
+    const center = surf.getByRole("button", { name: "Hold and flick from the center" });
+    await center.waitFor();
+    assert.equal(await center.evaluate((el) => el === document.activeElement), true);
+    await page.keyboard.press("Tab");
+    assert.equal(await page.evaluate(() => document.querySelector(".phisurf-panel").contains(document.activeElement)), true);
+    await page.keyboard.press("Shift+Tab");
+    assert.equal(await page.evaluate(() => document.querySelector(".phisurf-panel").contains(document.activeElement)), true);
+    const centerBox = await center.boundingBox();
+    const top = surf.locator(".phisurf-item").first();
+    const itemBox = await top.boundingBox();
+    await page.mouse.move(centerBox.x + centerBox.width / 2, centerBox.y + centerBox.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(itemBox.x + itemBox.width / 2, itemBox.y + itemBox.height / 2, { steps: 5 });
+    await page.mouse.up();
+    assert.equal(await surf.isVisible(), false);
+    assert.equal(await page.locator(".meter").count(), 3);
+  });
   await check(
     "Field mode reveals six middle-ring modules and nested 3–6–9 mechanism",
     async () => {

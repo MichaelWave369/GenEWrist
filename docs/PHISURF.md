@@ -1,15 +1,17 @@
 # ΦSURF Rung 1 · Gen.E.Wrist quick navigation
 
-**Status:** feature-branch candidate. This is a built-in navigation module, not a new application, host, or replacement for the 3–6–9 architecture.
+**Status:** Rung 1 merged; Rung 2 input refinement candidate. This is a built-in navigation module, not a new application, host, or replacement for the 3–6–9 architecture.
 
 ## Supported controls
 
 | Surface | Open | Select | Back / close |
 | --- | --- | --- | --- |
-| Browser desktop | Floating ΦSURF button or Shift+Space | Click a sector, arrow keys then Enter, or hold the button and flick into the ring before releasing | Escape / Backspace to parent; CLOSE to dismiss |
+| Browser desktop | Floating ΦSURF button or Shift+Space | Click a sector, arrow keys then Enter, or hold the dial's center and flick into the ring before releasing | Escape / Backspace to parent; CLOSE to dismiss |
 | Browser touch | Press floating ΦSURF; tap an option | Touch the options; drag-release from launcher when within the dial | BACK / CLOSE |
 | Browser gamepad | Manually turn PAD: ON in the dial, then LB | Left stick to aim and release LB, or A to select | B to go back |
 | Experimental embedded XR | Existing wrist panel's ΦSURF button | Guarded controller ray and trigger selecting radial options | DIAL BACK / CLOSE DIAL |
+
+Rung 2 introduces a **center-origin gesture**: open PhiSurf, then press the Φ center, move into a radial sector and release. This is a single-level selection gesture, not continuous navigation through multiple nested levels. The same pure radial-sector math handles mouse and gamepad direction. Selection highlight changes do not rebuild the center while its pointer is captured. Keyboard focus stays within the open dial and returns to the previous control after closing.
 
 Gamepad is **off by default**. The browser viewer must opt in to polling; this avoids taking control from a game in a host app. XR uses the existing host-owned controller and input guard, not a new global input hook. There is currently **no physical Quest 3 flick-motion calibration** or guarantee of wrist comfort.
 
