@@ -5,7 +5,7 @@ import { RINGS, CATALOG } from "./catalog.js";
  * Uses the public wrist API; never reads host memory, executes remote code,
  * grants capabilities, changes saves, or changes the canonical 3-6-9 catalog.
  */
-export function phiSurfTree(snapshot) {
+export function phiSurfTree(snapshot, { operatorRewards = [] } = {}) {
   const rings = RINGS.map((ring) => ({
     id: "ring-" + ring.id,
     label: ring.count + " / " + ring.label,
@@ -18,6 +18,26 @@ export function phiSurfTree(snapshot) {
       enabled: true,
     })),
   }));
+  // Optional learned shortcut wheel, not a new 3-6-9 module or an authority.
+  const favorites = snapshot.preferences?.favorites || [];
+  const shortcuts = CATALOG.filter((app) => favorites.includes(app.id)).slice(0, 9).map((app) => ({
+    id: "operator-app-" + app.id,
+    label: app.title,
+    kind: "app",
+    value: app.id,
+    enabled: true,
+  }));
+  const operatorMenus = operatorRewards.includes("phisurf-wheel") ? [{
+    id: "operator-shortcuts",
+    label: "OPERATOR SHORTCUTS",
+    kind: "menu",
+    children: shortcuts.length ? shortcuts : [{
+      id: "favorite-hint",
+      label: "STAR MODULES TO ADD SHORTCUTS",
+      kind: "hint",
+      enabled: false,
+    }],
+  }] : [];
   const world = snapshot.worldHost;
   const context = world?.manifest.contexts.find((x) => x.id === world.contextId);
   const worldItems = [{ id: "open-world", label: "OPEN WORLD MODE", kind: "navigate", value: "world", enabled: true }];
@@ -51,7 +71,7 @@ export function phiSurfTree(snapshot) {
       { id: "universal", label: "UNIVERSAL", kind: "navigate", value: "universal", enabled: true },
       { id: "world", label: "WORLD", kind: "menu", children: paginate(worldItems, "world") },
       { id: "atlas", label: "REALM ATLAS", kind: "navigate", value: "atlas", enabled: true },
-      { id: "modules", label: "3 · 6 · 9 MODULES", kind: "menu", children: rings },
+      { id: "modules", label: "3 · 6 · 9 MODULES", kind: "menu", children: [...rings, ...operatorMenus] },
       { id: "back", label: "BACK", kind: "back", enabled: true },
     ],
   };
@@ -74,11 +94,14 @@ const publicItem = (item) => Object.freeze({
   id: item.id, label: item.label, kind: item.kind,
   enabled: item.enabled !== false,
 });
-export function createPhiSurf({ wrist, onError = () => {} } = {}) {
+export function createPhiSurf({ wrist, onError = () => {}, operatorBridge = null } = {}) {
   if (!wrist?.snapshot || !wrist?.subscribe || !wrist?.navigate) throw TypeError("PhiSurf requires a Gen.E.Wrist instance");
+  if (operatorBridge && (typeof operatorBridge.snapshot !== "function" ||
+      typeof operatorBridge.subscribe !== "function"))
+    throw TypeError("Operator bridge must expose snapshot and subscribe.");
   let opened = false, path = [], selected = -1;
   const listeners = new Set();
-  const tree = () => phiSurfTree(wrist.snapshot());
+  const tree = () => phiSurfTree(wrist.snapshot(), { operatorRewards: operatorBridge?.snapshot().rewards || [] });
   const node = () => {
     let current = tree();
     const valid = [];
@@ -108,6 +131,9 @@ export function createPhiSurf({ wrist, onError = () => {} } = {}) {
     }
   };
   const wristUnsubscribe = wrist.subscribe(() => {
+    if (opened) { selected = -1; notify(); }
+  });
+  const operatorUnsubscribe = operatorBridge?.subscribe(() => {
     if (opened) { selected = -1; notify(); }
   });
   const close = () => { opened = false; path = []; selected = -1; notify(); };
@@ -163,6 +189,6 @@ export function createPhiSurf({ wrist, onError = () => {} } = {}) {
       return selected;
     },
     activate,
-    dispose() { close(); wristUnsubscribe(); listeners.clear(); },
+    dispose() { close(); wristUnsubscribe(); operatorUnsubscribe?.(); listeners.clear(); },
   });
 }
