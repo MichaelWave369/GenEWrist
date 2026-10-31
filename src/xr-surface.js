@@ -193,30 +193,63 @@ export function createXRSurface({
       c.lineWidth = 2;
       c.strokeRect(24, 160, 976, 522);
       text("ΦSURF / " + dial.title, 50, 200, 31, "#62e5ed");
-      text("POINT · SELECT · NAVIGATE", 576, 200, 21, "#b7cbd0");
+      text("AIM AT A SECTOR · PULL TRIGGER", 610, 200, 18, "#b7cbd0");
+      // Actual annular wedges, not overlapping rectangle hitboxes.
+      // No thumbstick is intercepted, so smooth-turn and host input remain owned by the game.
+      const cx = 512, cy = 423, inner = 82, outer = 186;
+      const count = dial.items.length;
+      dial.items.forEach((item, i) => {
+        const angle = -Math.PI / 2 + (Math.PI * 2 * i) / count;
+        const half = Math.PI / count;
+        const start = angle - half + 0.035;
+        const end = angle + half - 0.035;
+        const id = "surf-item-" + i;
+        c.beginPath();
+        c.arc(cx, cy, (inner + outer) / 2, start, end);
+        c.lineWidth = outer - inner - 8;
+        c.strokeStyle = item.enabled
+          ? hover === id ? "#397d84" : "#153c4b"
+          : "#1a2c32";
+        c.stroke();
+        c.beginPath();
+        c.arc(cx, cy, (inner + outer) / 2, start, end);
+        c.lineWidth = 2;
+        c.strokeStyle = item.enabled
+          ? hover === id ? "#ffdc9d" : "#65a9b3"
+          : "#3e535a";
+        c.stroke();
+        const x = cx + 132 * Math.cos(angle);
+        const y = cy + 132 * Math.sin(angle);
+        // Two short centered lines keep nine-sector labels legible in XR.
+        const words = item.label.split(" ");
+        const lines = [""];
+        for (const word of words) {
+          const current = lines.at(-1);
+          if (current && (current + " " + word).length > 12 && lines.length < 2) {
+            lines.push(word);
+          } else {
+            lines[lines.length - 1] = current ? current + " " + word : word;
+          }
+        }
+        c.textAlign = "center";
+        c.fillStyle = item.enabled ? "#eff8f6" : "#83959c";
+        c.font = "600 " + (count >= 8 ? 14 : 16) * fontScale + 'px "Trebuchet MS",sans-serif';
+        lines.forEach((line, j) => c.fillText(line, x, y + (j - (lines.length - 1) / 2) * 18 + 5, 108));
+        c.textAlign = "start";
+        if (item.enabled) {
+          targets.push({
+            id, shape: "annular-sector", cx, cy, inner, outer,
+            sector: i, count,
+            action: () => { void surf.activate(i); },
+          });
+        }
+      });
       c.beginPath();
-      c.arc(512, 417, 176, 0, Math.PI * 2);
-      c.strokeStyle = "#41717b";
-      c.stroke();
-      c.beginPath();
-      c.arc(512, 417, 69, 0, Math.PI * 2);
+      c.arc(cx, cy, inner - 7, 0, Math.PI * 2);
+      c.lineWidth = 3;
       c.strokeStyle = "#62e5ed";
       c.stroke();
-      text("Φ", 501, 425, 34, "#edc591");
-      dial.items.forEach((item, i) => {
-        const a = -Math.PI / 2 + (Math.PI * 2 * i) / dial.items.length;
-        const x = 512 + 204 * Math.cos(a), y = 419 + 204 * Math.sin(a);
-        button(
-          "surf-item-" + i,
-          x - 70,
-          y - 25,
-          140,
-          50,
-          item.label,
-          () => { void surf.activate(i); },
-          item.enabled,
-        );
-      });
+      text("Φ", cx - 13, cy + 11, 38, "#edc591");
       button("surf-back", 52, 619, 205, 49, "← DIAL BACK", () => surf.back());
       button("surf-close", 755, 619, 215, 49, "CLOSE DIAL", () => surf.close());
       return;
