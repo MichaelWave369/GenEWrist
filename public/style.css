@@ -2910,3 +2910,55 @@ body.reduced-motion *:after {
     color: var(--ink);
   }
 }
+
+
+/* PhiOperator bridge: purely optional visual rewards; never permissions. */
+.operator-passport-settings {
+  border-top: 1px solid #56828a77;
+  margin-top: 24px;
+  padding: 18px 0;
+}
+.operator-passport-settings h3 {
+  margin: 8px 0 12px;
+  font-size: 1.2rem;
+}
+.operator-passport-settings p { max-width: 720px; line-height: 1.5; }
+#operator-passport-status { color: #b7f9e8; font-weight: 650; }
+.operator-passport-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+.operator-passport-actions a { color: #b7f9e8; font-size: .84rem; }
+.operator-passport-actions .operator-import-label { cursor: pointer; font-size: .78rem; padding: 10px 13px; }
+#operator-passport-import {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%);
+}
+#operator-passport-import:focus-visible + label { outline: 3px solid #ffdc9b; }
+.operator-passport-actions button:disabled { opacity: .4; cursor: default; }
+body.operator-surf-wheel .phisurf-launch {
+  border: 2px solid #e9c0ff;
+  background: #2e1751;
+  color: #ffe7ff;
+  box-shadow: 0 0 0 3px #9341ad55, 0 8px 32px #b248f07d;
+}
+body.operator-surf-wheel .phisurf-launch::after { content: "  ✦"; }
+body.operator-surf-wheel .phisurf-orbit {
+  border: 2px solid #d3aaff;
+  box-shadow: inset 0 0 70px #462761, 0 0 0 12px #6e35a233;
+}
+body.operator-surf-wheel .phisurf-center { border-color: #ead4ff; }
+body.operator-wrist-pulse .wrist-shell {
+  box-shadow: 0 0 26px #92eee788, 0 0 70px #b07aff66;
+  animation: operator-wrist-glow 5s ease-in-out infinite;
+}
+body.operator-wrist-pulse .case-engraving { color: #c8b2ff; }
+@keyframes operator-wrist-glow {
+  0%,100% { filter: saturate(1); }
+  50% { filter: saturate(1.4) brightness(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.operator-wrist-pulse .wrist-shell { animation: none !important; }
+}
+body.reduced-motion.operator-wrist-pulse .wrist-shell { animation: none !important; }
+@media (max-width: 600px) {
+  .operator-passport-actions { align-items: stretch; }
+  .operator-passport-actions a { align-self: center; }
+}
