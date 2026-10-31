@@ -77,6 +77,7 @@ export function createXRSurface({
     c.fillText(label, x + 13, y + h / 2 + 8);
     if (enabled) targets.push({ id, x, y, w, h, action });
   };
+  const closeSurf = () => { if (surf.snapshot().open) surf.close(); };
   const nav = () => {
     [
       [
@@ -85,6 +86,7 @@ export function createXRSurface({
         () => {
           pending = null;
           permissions = false;
+          closeSurf();
           wrist.home();
         },
       ],
@@ -104,6 +106,7 @@ export function createXRSurface({
         () => {
           permissions = false;
           pending = null;
+          closeSurf();
           wrist.navigate("universal");
           wrist.setMode("field");
         },
@@ -114,6 +117,7 @@ export function createXRSurface({
         () => {
           permissions = false;
           pending = null;
+          closeSurf();
           wrist.navigate("world");
           wrist.setMode("field");
         },
@@ -124,6 +128,7 @@ export function createXRSurface({
         () => {
           pending = null;
           permissions = false;
+          closeSurf();
           wrist.setMode("glance");
         },
       ],
@@ -135,6 +140,7 @@ export function createXRSurface({
     button("atlas", 450, 696, 238, 49, "REALM ATLAS", () => {
       pending = null;
       permissions = false;
+      closeSurf();
       wrist.navigate("atlas");
       wrist.setMode("field");
     });
@@ -151,10 +157,12 @@ export function createXRSurface({
       wrist.snapshot().preferences.mode === "glance"
         ? "EXPAND"
         : "GLANCE",
-      () =>
+      () => {
+        closeSurf();
         wrist.setMode(
           wrist.snapshot().preferences.mode === "glance" ? "field" : "glance",
-        ),
+        );
+      },
     );
   };
   const next = (total, size = 4) => {
