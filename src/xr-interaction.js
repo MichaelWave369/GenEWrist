@@ -1,4 +1,5 @@
 /** Pure WebXR geometry/input helpers. Synthetic tests do not qualify hardware. */
+import { radialIndex } from "./phisurf.js";
 export function rayPanelHit(model, ray) {
   if (!model || !ray) return null;
   const sx = Math.hypot(model[0], model[1], model[2]),
@@ -32,16 +33,22 @@ export function rayPanelHit(model, ray) {
   return u >= 0 && u <= 1 && v >= 0 && v <= 1 ? { u, v, distance: t } : null;
 }
 export function targetAt(targets, hit) {
-  if (!hit) return null;
-  return (
-    targets.find(
-      (t) =>
-        hit.u * 1024 >= t.x &&
-        hit.u * 1024 <= t.x + t.w &&
-        hit.v * 768 >= t.y &&
-        hit.v * 768 <= t.y + t.h,
-    ) || null
-  );
+  if (!hit || !Number.isFinite(hit.u) || !Number.isFinite(hit.v) ||
+      hit.u < 0 || hit.u > 1 || hit.v < 0 || hit.v > 1) return null;
+  const x = hit.u * 1024, y = hit.v * 768;
+  return targets.find((t) => {
+    if (t.shape === "annular-sector") {
+      const dx = x - t.cx, dy = y - t.cy;
+      const center = -Math.PI / 2 + t.sector * Math.PI * 2 / t.count;
+      const delta = Math.atan2(Math.sin(Math.atan2(dy, dx) - center),
+        Math.cos(Math.atan2(dy, dx) - center));
+      const half = Math.PI / t.count;
+      return radialIndex(dx, dy, t.count, {
+        inner: t.inner, outer: t.outer,
+      }) === t.sector && Math.abs(delta) <= half - (t.gapRadians || 0);
+    }
+    return x >= t.x && x <= t.x + t.w && y >= t.y && y <= t.y + t.h;
+  }) || null;
 }
 export function createInputGuard() {
   const sources = new Map();

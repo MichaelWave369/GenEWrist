@@ -9,6 +9,7 @@ Before release as a qualified headset integration, use the built HTTPS Pages con
 - [ ] Raise the nonpointer wrist/controller in front at a comfortable distance. Check hand-adjacent placement, excessive proximity protection and tracking-loss fallback.
 - [ ] Switch pointer handedness; test left-handed operation and controller fallback with optional hand input unavailable.
 - [ ] Test right/left controller rays, target feedback, exact press/release selection and held-trigger entry suppression.
+- [ ] Open ΦSURF in VR; verify 3/6/9 annular sectors, nonselectable center, gaps between sectors, legible two-line labels, disabled sectors and cursor hover. Verify DIAL BACK/CLOSE and persistent navigation dismiss the dial.
 - [ ] Release/re-arm after tracking loss, input source replacement, visibility changes, recenter and context changes.
 - [ ] Select all 3/6/9 rings, open actual modules and read full labels; test keyboard/focus alternatives in 2D.
 - [ ] In World Mode, connect each explicitly simulated host, grant only a selected action, revoke, disconnect and return Home/Universal/Back.
@@ -22,4 +23,4 @@ Before release as a qualified headset integration, use the built HTTPS Pages con
 - [ ] Test 15+ minutes of actual frame pacing, thermal behavior, memory and battery use. Record measurements rather than infer performance from desktop render counters.
 - [ ] Separately integrate and test BTM in its own PR; preserve combat input suppression, neutral re-arm, weapons, map, Ori, checkpoints and travel.
 
-No physical headset was available for this implementation. Calibrated forearm registration, continuous custom gesture recognition and genuine shared-host in-session portals are not claimed.
+A software-only XR sector suite covers wedge hit geometry, disabled WORLD controls, and local navigation; it **does not** establish Quest 3 accuracy or comfort. No physical headset was available for this implementation. Calibrated forearm registration, continuous custom gesture recognition and genuine shared-host in-session portals are not claimed.
