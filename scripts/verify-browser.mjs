@@ -156,6 +156,11 @@ try {
     await page.mouse.up();
     assert.equal(await dial.isVisible(), false);
     assert.notEqual(await page.locator("#workspace-title").innerText(), "A home between worlds.");
+    // Restore the exact Glance/middle-ring baseline required by existing suites.
+    await page.locator('[data-action="close-app"]').click();
+    await page.locator('#ring-controls [data-id="middle"]').click();
+    await page.locator('.device-bottom [data-action="mode-toggle"]').click();
+    assert.equal(await page.locator(".meter").count(), 3);
   });
   await check("PhiSurf pad requires neutral re-arm and does not select a held stick on activation", async () => {
     await page.keyboard.press("Shift+Space");
