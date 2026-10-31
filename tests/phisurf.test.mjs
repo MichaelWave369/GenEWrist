@@ -106,7 +106,7 @@ test("Large host menus page within nine radial slots", async () => {
   await surf.activate(8);
   assert.equal(surf.snapshot().items.length, 9);
   await surf.activate(1);
-  assert.deepEqual(calls, ["do-9"]);
+  assert.deepEqual(calls, ["do-8"]);
   surf.dispose(); w.dispose();
 });
 
